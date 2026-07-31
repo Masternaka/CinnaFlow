@@ -1,0 +1,375 @@
+{
+  "header-tiling-system": {
+    "type": "header",
+    "description": "Tiling System"
+  },
+  "enable-tiling-system": {
+    "type": "switch",
+    "default": true,
+    "description": "Enable tiling system"
+  },
+  "tiling-system-activation-key": {
+    "type": "entry",
+    "default": "[\"0\"]",
+    "description": "Activation key (0=Ctrl, 1=Alt, 2=Super, -1=None)"
+  },
+  "tiling-system-deactivation-key": {
+    "type": "entry",
+    "default": "[\"-1\"]",
+    "description": "Deactivation key (0=Ctrl, 1=Alt, 2=Super, -1=None)"
+  },
+  "enable-span-multiple-tiles": {
+    "type": "switch",
+    "default": true,
+    "description": "Enable span multiple tiles"
+  },
+  "span-multiple-tiles-activation-key": {
+    "type": "entry",
+    "default": "[\"1\"]",
+    "description": "Span multiple tiles key (0=Ctrl, 1=Alt, 2=Super, -1=None)"
+  },
+  "restore-window-original-size": {
+    "type": "switch",
+    "default": true,
+    "description": "Restore window original size when untiled"
+  },
+  "enable-snap-assist": {
+    "type": "switch",
+    "default": true,
+    "description": "Enable snap assistant"
+  },
+  "snap-assist-sync-layout": {
+    "type": "switch",
+    "default": false,
+    "description": "Sync snap assistant layout with tiling layout"
+  },
+  "snap-assistant-threshold": {
+    "type": "spinbutton",
+    "default": 24,
+    "min": 1,
+    "max": 200,
+    "step": 1,
+    "units": "px",
+    "description": "Snap assistant sensitivity threshold"
+  },
+  "snap-assistant-animation-time": {
+    "type": "spinbutton",
+    "default": 200,
+    "min": 0,
+    "max": 1000,
+    "step": 50,
+    "units": "ms",
+    "description": "Snap assistant animation duration"
+  },
+  "header-gaps": {
+    "type": "header",
+    "description": "Gaps"
+  },
+  "inner-gaps": {
+    "type": "spinbutton",
+    "default": 4,
+    "min": 0,
+    "max": 64,
+    "step": 1,
+    "units": "px",
+    "description": "Inner gaps between tiles"
+  },
+  "outer-gaps": {
+    "type": "spinbutton",
+    "default": 4,
+    "min": 0,
+    "max": 64,
+    "step": 1,
+    "units": "px",
+    "description": "Outer gaps around the layout"
+  },
+  "header-edge-tiling": {
+    "type": "header",
+    "description": "Edge Tiling"
+  },
+  "active-screen-edges": {
+    "type": "switch",
+    "default": true,
+    "description": "Enable edge tiling"
+  },
+  "top-edge-maximize": {
+    "type": "switch",
+    "default": true,
+    "description": "Top edge maximizes window"
+  },
+  "edge-tiling-mode": {
+    "type": "combobox",
+    "default": "default",
+    "options": {
+      "default": "Default",
+      "adaptive": "Adaptive",
+      "granular": "Granular"
+    },
+    "description": "Edge tiling mode"
+  },
+  "quarter-tiling-threshold": {
+    "type": "spinbutton",
+    "default": 35,
+    "min": 10,
+    "max": 50,
+    "step": 1,
+    "units": "px",
+    "description": "Quarter tiling threshold"
+  },
+  "edge-tiling-offset": {
+    "type": "spinbutton",
+    "default": 5,
+    "min": 1,
+    "max": 50,
+    "step": 1,
+    "units": "px",
+    "description": "Edge tiling trigger offset"
+  },
+  "header-keybindings": {
+    "type": "header",
+    "description": "Keyboard Shortcuts"
+  },
+  "enable-move-keybindings": {
+    "type": "switch",
+    "default": true,
+    "description": "Enable keyboard shortcuts"
+  },
+  "move-window-right": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Move window right"
+  },
+  "move-window-left": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Move window left"
+  },
+  "move-window-up": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Move window up"
+  },
+  "move-window-down": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Move window down"
+  },
+  "span-window-right": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Span window right"
+  },
+  "span-window-left": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Span window left"
+  },
+  "span-window-up": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Span window up"
+  },
+  "span-window-down": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Span window down"
+  },
+  "span-window-all-tiles": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Span window across all tiles"
+  },
+  "untile-window": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Untile window"
+  },
+  "move-window-center": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Move window to center tile"
+  },
+  "focus-window-right": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Focus window to the right"
+  },
+  "focus-window-left": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Focus window to the left"
+  },
+  "focus-window-up": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Focus window above"
+  },
+  "focus-window-down": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Focus window below"
+  },
+  "focus-window-next": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Focus next tiled window"
+  },
+  "focus-window-prev": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Focus previous tiled window"
+  },
+  "highlight-current-window": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Highlight current window"
+  },
+  "cycle-layouts": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Cycle layouts forward"
+  },
+  "cycle-layouts-backward": {
+    "type": "keybinding",
+    "default": "",
+    "description": "Cycle layouts backward"
+  },
+  "header-appearance": {
+    "type": "header",
+    "description": "Appearance"
+  },
+  "show-indicator": {
+    "type": "switch",
+    "default": true,
+    "description": "Show panel indicator"
+  },
+  "enable-window-border": {
+    "type": "switch",
+    "default": false,
+    "description": "Highlight focused tiled window"
+  },
+  "window-use-custom-border-color": {
+    "type": "switch",
+    "default": false,
+    "description": "Use custom border color"
+  },
+  "window-border-color": {
+    "type": "colorchooser",
+    "default": "#3584e4",
+    "description": "Border color"
+  },
+  "window-border-width": {
+    "type": "spinbutton",
+    "default": 2,
+    "min": 1,
+    "max": 10,
+    "step": 1,
+    "units": "px",
+    "description": "Border width"
+  },
+  "enable-smart-window-border-radius": {
+    "type": "switch",
+    "default": true,
+    "description": "Smart border radius"
+  },
+  "enable-blur-snap-assistant": {
+    "type": "switch",
+    "default": true,
+    "description": "Blur behind snap assistant"
+  },
+  "enable-blur-selected-tilepreview": {
+    "type": "switch",
+    "default": true,
+    "description": "Blur behind tile preview"
+  },
+  "tile-preview-animation-time": {
+    "type": "spinbutton",
+    "default": 200,
+    "min": 0,
+    "max": 1000,
+    "step": 50,
+    "units": "ms",
+    "description": "Tile preview animation duration"
+  },
+  "header-behaviour": {
+    "type": "header",
+    "description": "Behaviour"
+  },
+  "resize-complementing-windows": {
+    "type": "switch",
+    "default": true,
+    "description": "Resize adjacent tiled windows together (smart resize)"
+  },
+  "enable-wraparound-focus": {
+    "type": "switch",
+    "default": true,
+    "description": "Wraparound directional focus"
+  },
+  "enable-directional-focus-tiled-only": {
+    "type": "switch",
+    "default": false,
+    "description": "Directional focus only between tiled windows"
+  },
+  "raise-together": {
+    "type": "switch",
+    "default": false,
+    "description": "Raise tiled windows together"
+  },
+  "override-alt-tab": {
+    "type": "switch",
+    "default": false,
+    "description": "Customize Alt-Tab for tiled window groups"
+  },
+  "header-autotiling": {
+    "type": "header",
+    "description": "Auto Tiling"
+  },
+  "enable-autotiling": {
+    "type": "switch",
+    "default": false,
+    "description": "Enable auto tiling (automatically tile new windows)"
+  },
+  "header-suggestions": {
+    "type": "header",
+    "description": "Windows Suggestions"
+  },
+  "enable-tiling-system-windows-suggestions": {
+    "type": "switch",
+    "default": true,
+    "description": "Show suggestions after tiling system"
+  },
+  "enable-snap-assistant-windows-suggestions": {
+    "type": "switch",
+    "default": true,
+    "description": "Show suggestions after snap assistant"
+  },
+  "enable-screen-edges-windows-suggestions": {
+    "type": "switch",
+    "default": true,
+    "description": "Show suggestions after edge tiling"
+  },
+  "header-internal": {
+    "type": "header",
+    "description": "Internal"
+  },
+  "last-version-name-installed": {
+    "type": "entry",
+    "default": "0",
+    "description": "Last installed version"
+  },
+  "overridden-settings": {
+    "type": "entry",
+    "default": "{}",
+    "description": "Overridden system settings"
+  },
+  "layouts-json": {
+    "type": "entry",
+    "default": "[]",
+    "description": "Layouts JSON"
+  },
+  "selected-layouts": {
+    "type": "entry",
+    "default": "[]",
+    "description": "Selected layouts per workspace"
+  }
+}

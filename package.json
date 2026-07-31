@@ -1,0 +1,28 @@
+{
+  "name": "tilingshell-cinnamon",
+  "version": "1.0.0",
+  "author": "Domenico Ferraro <ferraro.domenico125@gmail.com>",
+  "private": true,
+  "license": "GPL v3.0",
+  "scripts": {
+    "build": "npm run clean && node esbuild.mjs",
+    "clean": "rm -rf dist",
+    "install:extension": "mkdir -p ~/.local/share/cinnamon/extensions/tilingshell@cinnamon && cp ./dist/* ~/.local/share/cinnamon/extensions/tilingshell@cinnamon/ -r",
+    "dev": "npm run build && npm run install:extension",
+    "logs:cinnamon": "journalctl -f -o cat /usr/bin/cinnamon",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "prettier:check": "prettier --check \"**/*.ts\"",
+    "prettier:fix": "prettier --write \"**/*.ts\""
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.10",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "@typescript-eslint/eslint-plugin": "^8.48.0",
+    "@typescript-eslint/parser": "^8.48.0",
+    "globals": "^16.4.0",
+    "prettier": "^3.7.3",
+    "typescript": "^5.9.2"
+  }
+}

@@ -1,0 +1,383 @@
+import { GObject, GLib } from '../gi/shared';
+import Layout from '../components/layout/Layout';
+import Tile from '../components/layout/Tile';
+
+export enum ActivationKey {
+    NONE = -1,
+    CTRL = 0,
+    ALT,
+    SUPER,
+}
+
+export enum EdgeTilingMode {
+    DEFAULT = 'default',
+    ADAPTIVE = 'adaptive',
+    GRANULAR = 'granular',
+}
+
+/** ------------- Utility functions (Cinnamon ExtensionSettings) ------------- */
+function get_string(key: string): string {
+    return Settings.cinnamonSettings?.getValue(key) ?? '';
+}
+
+function set_string(key: string, val: string): boolean {
+    Settings.cinnamonSettings?.setValue(key, val);
+    return true;
+}
+
+function get_boolean(key: string): boolean {
+    return Settings.cinnamonSettings?.getValue(key) ?? false;
+}
+
+function set_boolean(key: string, val: boolean): boolean {
+    Settings.cinnamonSettings?.setValue(key, val);
+    return true;
+}
+
+function get_number(key: string): number {
+    return Settings.cinnamonSettings?.getValue(key) ?? 0;
+}
+
+function set_number(key: string, val: number): boolean {
+    Settings.cinnamonSettings?.setValue(key, val);
+    return true;
+}
+
+function get_unsigned_number(key: string): number {
+    return Settings.cinnamonSettings?.getValue(key) ?? 0;
+}
+
+function set_unsigned_number(key: string, val: number): boolean {
+    Settings.cinnamonSettings?.setValue(key, val);
+    return true;
+}
+
+function get_activationkey(
+    key: string,
+    defaultValue: ActivationKey,
+): ActivationKey {
+    // In Cinnamon, activation keys are stored as a JSON array string e.g. "[-1]"
+    const raw: string = Settings.cinnamonSettings?.getValue(key) ?? '';
+    try {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr) && arr.length > 0) return Number(arr[0]);
+    } catch (_) { /* ignore */ }
+    return defaultValue;
+}
+
+function set_activationkey(key: string, val: ActivationKey): boolean {
+    Settings.cinnamonSettings?.setValue(key, JSON.stringify([String(val)]));
+    return true;
+}
+
+export default class Settings {
+    /** Cinnamon ExtensionSettings instance (set via initialize()) */
+    static cinnamonSettings: any = null;
+    static _is_initialized: boolean = false;
+
+    static KEY_LAST_VERSION_NAME_INSTALLED = 'last-version-name-installed';
+    static KEY_OVERRIDDEN_SETTINGS = 'overridden-settings';
+    static KEY_WINDOW_BORDER_COLOR = 'window-border-color';
+    static KEY_WINDOW_USE_CUSTOM_BORDER_COLOR = 'window-use-custom-border-color';
+    static KEY_TILING_SYSTEM = 'enable-tiling-system';
+    static KEY_SNAP_ASSIST = 'enable-snap-assist';
+    static KEY_SNAP_ASSIST_SYNC_LAYOUT = 'snap-assist-sync-layout';
+    static KEY_SHOW_INDICATOR = 'show-indicator';
+    static KEY_TILING_SYSTEM_ACTIVATION_KEY = 'tiling-system-activation-key';
+    static KEY_TILING_SYSTEM_DEACTIVATION_KEY = 'tiling-system-deactivation-key';
+    static KEY_SPAN_MULTIPLE_TILES_ACTIVATION_KEY = 'span-multiple-tiles-activation-key';
+    static KEY_SPAN_MULTIPLE_TILES = 'enable-span-multiple-tiles';
+    static KEY_RESTORE_WINDOW_ORIGINAL_SIZE = 'restore-window-original-size';
+    static KEY_WRAPAROUND_FOCUS = 'enable-wraparound-focus';
+    static KEY_ENABLE_DIRECTIONAL_FOCUS_TILED_ONLY = 'enable-directional-focus-tiled-only';
+    static KEY_RESIZE_COMPLEMENTING_WINDOWS = 'resize-complementing-windows';
+    static KEY_ENABLE_BLUR_SNAP_ASSISTANT = 'enable-blur-snap-assistant';
+    static KEY_ENABLE_BLUR_SELECTED_TILEPREVIEW = 'enable-blur-selected-tilepreview';
+    static KEY_ENABLE_MOVE_KEYBINDINGS = 'enable-move-keybindings';
+    static KEY_ENABLE_AUTO_TILING = 'enable-autotiling';
+    static KEY_RAISE_TOGETHER = 'raise-together';
+    static KEY_ACTIVE_SCREEN_EDGES = 'active-screen-edges';
+    static KEY_TOP_EDGE_MAXIMIZE = 'top-edge-maximize';
+    static KEY_OVERRIDE_ALT_TAB = 'override-alt-tab';
+    static KEY_SNAP_ASSISTANT_THRESHOLD = 'snap-assistant-threshold';
+    static KEY_ENABLE_WINDOW_BORDER = 'enable-window-border';
+    static KEY_INNER_GAPS = 'inner-gaps';
+    static KEY_OUTER_GAPS = 'outer-gaps';
+    static KEY_SNAP_ASSISTANT_ANIMATION_TIME = 'snap-assistant-animation-time';
+    static KEY_TILE_PREVIEW_ANIMATION_TIME = 'tile-preview-animation-time';
+    static KEY_SETTING_LAYOUTS_JSON = 'layouts-json';
+    static KEY_SETTING_SELECTED_LAYOUTS = 'selected-layouts';
+    static KEY_WINDOW_BORDER_WIDTH = 'window-border-width';
+    static KEY_ENABLE_SMART_WINDOW_BORDER_RADIUS = 'enable-smart-window-border-radius';
+    static KEY_QUARTER_TILING_THRESHOLD = 'quarter-tiling-threshold';
+    static KEY_EDGE_TILING_OFFSET = 'edge-tiling-offset';
+    static KEY_ENABLE_TILING_SYSTEM_WINDOWS_SUGGESTIONS = 'enable-tiling-system-windows-suggestions';
+    static KEY_ENABLE_SNAP_ASSISTANT_WINDOWS_SUGGESTIONS = 'enable-snap-assistant-windows-suggestions';
+    static KEY_ENABLE_SCREEN_EDGES_WINDOWS_SUGGESTIONS = 'enable-screen-edges-windows-suggestions';
+    static KEY_EDGE_TILING_MODE = 'edge-tiling-mode';
+
+    static SETTING_MOVE_WINDOW_RIGHT = 'move-window-right';
+    static SETTING_MOVE_WINDOW_LEFT = 'move-window-left';
+    static SETTING_MOVE_WINDOW_UP = 'move-window-up';
+    static SETTING_MOVE_WINDOW_DOWN = 'move-window-down';
+    static SETTING_SPAN_WINDOW_RIGHT = 'span-window-right';
+    static SETTING_SPAN_WINDOW_LEFT = 'span-window-left';
+    static SETTING_SPAN_WINDOW_UP = 'span-window-up';
+    static SETTING_SPAN_WINDOW_DOWN = 'span-window-down';
+    static SETTING_SPAN_WINDOW_ALL_TILES = 'span-window-all-tiles';
+    static SETTING_UNTILE_WINDOW = 'untile-window';
+    static SETTING_MOVE_WINDOW_CENTER = 'move-window-center';
+    static SETTING_FOCUS_WINDOW_RIGHT = 'focus-window-right';
+    static SETTING_FOCUS_WINDOW_LEFT = 'focus-window-left';
+    static SETTING_FOCUS_WINDOW_UP = 'focus-window-up';
+    static SETTING_FOCUS_WINDOW_DOWN = 'focus-window-down';
+    static SETTING_FOCUS_WINDOW_NEXT = 'focus-window-next';
+    static SETTING_FOCUS_WINDOW_PREV = 'focus-window-prev';
+    static SETTING_HIGHLIGHT_CURRENT_WINDOW = 'highlight-current-window';
+    static SETTING_CYCLE_LAYOUTS = 'cycle-layouts';
+    static SETTING_CYCLE_LAYOUTS_BACKWARD = 'cycle-layouts-backward';
+
+    static initialize(cinnamonSettings: any) {
+        if (this._is_initialized) return;
+        this._is_initialized = true;
+        this.cinnamonSettings = cinnamonSettings;
+    }
+
+    static destroy() {
+        this._is_initialized = false;
+        this.cinnamonSettings = null;
+    }
+
+    /** Bind a setting to an object property (Cinnamon ExtensionSettings style) */
+    static bind(
+        key: string,
+        object: any,
+        property: string,
+        _flags?: any,
+    ): void {
+        if (!this.cinnamonSettings) return;
+        // Set initial value
+        object[property] = this.cinnamonSettings.getValue(key);
+        // Connect to changes
+        this.cinnamonSettings.connect(`changed::${key}`, () => {
+            object[property] = this.cinnamonSettings.getValue(key);
+        });
+    }
+
+    /** Connect to setting changes (compatible with GNOME Gio.Settings signal interface) */
+    static connect(key: string, func: (..._arg: unknown[]) => void): number {
+        return this.cinnamonSettings?.connect(`changed::${key}`, func) ?? -1;
+    }
+
+    static disconnect(id: number) {
+        if (id >= 0) this.cinnamonSettings?.disconnect(id);
+    }
+
+    // ─── Getters / Setters ────────────────────────────────────────────────────
+
+    static get LAST_VERSION_NAME_INSTALLED(): string {
+        return get_string(Settings.KEY_LAST_VERSION_NAME_INSTALLED);
+    }
+    static set LAST_VERSION_NAME_INSTALLED(val: string) {
+        set_string(Settings.KEY_LAST_VERSION_NAME_INSTALLED, val);
+    }
+
+    static get OVERRIDDEN_SETTINGS(): string {
+        return get_string(Settings.KEY_OVERRIDDEN_SETTINGS);
+    }
+    static set OVERRIDDEN_SETTINGS(val: string) {
+        set_string(Settings.KEY_OVERRIDDEN_SETTINGS, val);
+    }
+
+    static get TILING_SYSTEM(): boolean { return get_boolean(Settings.KEY_TILING_SYSTEM); }
+    static set TILING_SYSTEM(val: boolean) { set_boolean(Settings.KEY_TILING_SYSTEM, val); }
+
+    static get SNAP_ASSIST(): boolean { return get_boolean(Settings.KEY_SNAP_ASSIST); }
+    static set SNAP_ASSIST(val: boolean) { set_boolean(Settings.KEY_SNAP_ASSIST, val); }
+
+    static get SNAP_ASSIST_SYNC_LAYOUT(): boolean { return get_boolean(Settings.KEY_SNAP_ASSIST_SYNC_LAYOUT); }
+    static set SNAP_ASSIST_SYNC_LAYOUT(val: boolean) { set_boolean(Settings.KEY_SNAP_ASSIST_SYNC_LAYOUT, val); }
+
+    static get SHOW_INDICATOR(): boolean { return get_boolean(Settings.KEY_SHOW_INDICATOR); }
+    static set SHOW_INDICATOR(val: boolean) { set_boolean(Settings.KEY_SHOW_INDICATOR, val); }
+
+    static get TILING_SYSTEM_ACTIVATION_KEY(): ActivationKey {
+        return get_activationkey(Settings.KEY_TILING_SYSTEM_ACTIVATION_KEY, ActivationKey.CTRL);
+    }
+    static set TILING_SYSTEM_ACTIVATION_KEY(val: ActivationKey) {
+        set_activationkey(Settings.KEY_TILING_SYSTEM_ACTIVATION_KEY, val);
+    }
+
+    static get TILING_SYSTEM_DEACTIVATION_KEY(): ActivationKey {
+        return get_activationkey(Settings.KEY_TILING_SYSTEM_DEACTIVATION_KEY, ActivationKey.NONE);
+    }
+    static set TILING_SYSTEM_DEACTIVATION_KEY(val: ActivationKey) {
+        set_activationkey(Settings.KEY_TILING_SYSTEM_DEACTIVATION_KEY, val);
+    }
+
+    static get INNER_GAPS(): number { return get_unsigned_number(Settings.KEY_INNER_GAPS); }
+    static set INNER_GAPS(val: number) { set_unsigned_number(Settings.KEY_INNER_GAPS, val); }
+
+    static get OUTER_GAPS(): number { return get_unsigned_number(Settings.KEY_OUTER_GAPS); }
+    static set OUTER_GAPS(val: number) { set_unsigned_number(Settings.KEY_OUTER_GAPS, val); }
+
+    static get SPAN_MULTIPLE_TILES(): boolean { return get_boolean(Settings.KEY_SPAN_MULTIPLE_TILES); }
+    static set SPAN_MULTIPLE_TILES(val: boolean) { set_boolean(Settings.KEY_SPAN_MULTIPLE_TILES, val); }
+
+    static get SPAN_MULTIPLE_TILES_ACTIVATION_KEY(): ActivationKey {
+        return get_activationkey(Settings.KEY_SPAN_MULTIPLE_TILES_ACTIVATION_KEY, ActivationKey.ALT);
+    }
+    static set SPAN_MULTIPLE_TILES_ACTIVATION_KEY(val: ActivationKey) {
+        set_activationkey(Settings.KEY_SPAN_MULTIPLE_TILES_ACTIVATION_KEY, val);
+    }
+
+    static get RESTORE_WINDOW_ORIGINAL_SIZE(): boolean { return get_boolean(Settings.KEY_RESTORE_WINDOW_ORIGINAL_SIZE); }
+    static set RESTORE_WINDOW_ORIGINAL_SIZE(val: boolean) { set_boolean(Settings.KEY_RESTORE_WINDOW_ORIGINAL_SIZE, val); }
+
+    static get WRAPAROUND_FOCUS(): boolean { return get_boolean(Settings.KEY_WRAPAROUND_FOCUS); }
+    static set WRAPAROUND_FOCUS(val: boolean) { set_boolean(Settings.KEY_WRAPAROUND_FOCUS, val); }
+
+    static get ENABLE_DIRECTIONAL_FOCUS_TILED_ONLY(): boolean { return get_boolean(Settings.KEY_ENABLE_DIRECTIONAL_FOCUS_TILED_ONLY); }
+    static set ENABLE_DIRECTIONAL_FOCUS_TILED_ONLY(val: boolean) { set_boolean(Settings.KEY_ENABLE_DIRECTIONAL_FOCUS_TILED_ONLY, val); }
+
+    static get RESIZE_COMPLEMENTING_WINDOWS(): boolean { return get_boolean(Settings.KEY_RESIZE_COMPLEMENTING_WINDOWS); }
+    static set RESIZE_COMPLEMENTING_WINDOWS(val: boolean) { set_boolean(Settings.KEY_RESIZE_COMPLEMENTING_WINDOWS, val); }
+
+    static get ENABLE_BLUR_SNAP_ASSISTANT(): boolean { return get_boolean(Settings.KEY_ENABLE_BLUR_SNAP_ASSISTANT); }
+    static set ENABLE_BLUR_SNAP_ASSISTANT(val: boolean) { set_boolean(Settings.KEY_ENABLE_BLUR_SNAP_ASSISTANT, val); }
+
+    static get ENABLE_BLUR_SELECTED_TILEPREVIEW(): boolean { return get_boolean(Settings.KEY_ENABLE_BLUR_SELECTED_TILEPREVIEW); }
+    static set ENABLE_BLUR_SELECTED_TILEPREVIEW(val: boolean) { set_boolean(Settings.KEY_ENABLE_BLUR_SELECTED_TILEPREVIEW, val); }
+
+    static get ENABLE_MOVE_KEYBINDINGS(): boolean { return get_boolean(Settings.KEY_ENABLE_MOVE_KEYBINDINGS); }
+    static set ENABLE_MOVE_KEYBINDINGS(val: boolean) { set_boolean(Settings.KEY_ENABLE_MOVE_KEYBINDINGS, val); }
+
+    static get ENABLE_AUTO_TILING(): boolean { return get_boolean(Settings.KEY_ENABLE_AUTO_TILING); }
+    static set ENABLE_AUTO_TILING(val: boolean) { set_boolean(Settings.KEY_ENABLE_AUTO_TILING, val); }
+
+    static get RAISE_TOGETHER(): boolean { return get_boolean(Settings.KEY_RAISE_TOGETHER); }
+    static set RAISE_TOGETHER(val: boolean) { set_boolean(Settings.KEY_RAISE_TOGETHER, val); }
+
+    static get ACTIVE_SCREEN_EDGES(): boolean { return get_boolean(Settings.KEY_ACTIVE_SCREEN_EDGES); }
+    static set ACTIVE_SCREEN_EDGES(val: boolean) { set_boolean(Settings.KEY_ACTIVE_SCREEN_EDGES, val); }
+
+    static get TOP_EDGE_MAXIMIZE(): boolean { return get_boolean(Settings.KEY_TOP_EDGE_MAXIMIZE); }
+    static set TOP_EDGE_MAXIMIZE(val: boolean) { set_boolean(Settings.KEY_TOP_EDGE_MAXIMIZE, val); }
+
+    static get OVERRIDE_ALT_TAB(): boolean { return get_boolean(Settings.KEY_OVERRIDE_ALT_TAB); }
+    static set OVERRIDE_ALT_TAB(val: boolean) { set_boolean(Settings.KEY_OVERRIDE_ALT_TAB, val); }
+
+    static get SNAP_ASSISTANT_THRESHOLD(): number { return get_number(Settings.KEY_SNAP_ASSISTANT_THRESHOLD); }
+    static set SNAP_ASSISTANT_THRESHOLD(val: number) { set_number(Settings.KEY_SNAP_ASSISTANT_THRESHOLD, val); }
+
+    static get QUARTER_TILING_THRESHOLD(): number { return get_unsigned_number(Settings.KEY_QUARTER_TILING_THRESHOLD); }
+    static set QUARTER_TILING_THRESHOLD(val: number) { set_unsigned_number(Settings.KEY_QUARTER_TILING_THRESHOLD, val); }
+
+    static get EDGE_TILING_OFFSET(): number { return get_unsigned_number(Settings.KEY_EDGE_TILING_OFFSET); }
+    static set EDGE_TILING_OFFSET(val: number) { set_unsigned_number(Settings.KEY_EDGE_TILING_OFFSET, val); }
+
+    static get WINDOW_BORDER_COLOR(): string { return get_string(Settings.KEY_WINDOW_BORDER_COLOR); }
+    static set WINDOW_BORDER_COLOR(val: string) { set_string(Settings.KEY_WINDOW_BORDER_COLOR, val); }
+
+    static get WINDOW_USE_CUSTOM_BORDER_COLOR(): boolean { return get_boolean(Settings.KEY_WINDOW_USE_CUSTOM_BORDER_COLOR); }
+    static set WINDOW_USE_CUSTOM_BORDER_COLOR(val: boolean) { set_boolean(Settings.KEY_WINDOW_USE_CUSTOM_BORDER_COLOR, val); }
+
+    static get WINDOW_BORDER_WIDTH(): number { return get_unsigned_number(Settings.KEY_WINDOW_BORDER_WIDTH); }
+    static set WINDOW_BORDER_WIDTH(val: number) { set_unsigned_number(Settings.KEY_WINDOW_BORDER_WIDTH, val); }
+
+    static get ENABLE_SMART_WINDOW_BORDER_RADIUS(): boolean { return get_boolean(Settings.KEY_ENABLE_SMART_WINDOW_BORDER_RADIUS); }
+    static set ENABLE_SMART_WINDOW_BORDER_RADIUS(val: boolean) { set_boolean(Settings.KEY_ENABLE_SMART_WINDOW_BORDER_RADIUS, val); }
+
+    static get ENABLE_WINDOW_BORDER(): boolean { return get_boolean(Settings.KEY_ENABLE_WINDOW_BORDER); }
+    static set ENABLE_WINDOW_BORDER(val: boolean) { set_boolean(Settings.KEY_ENABLE_WINDOW_BORDER, val); }
+
+    static get SNAP_ASSISTANT_ANIMATION_TIME(): number { return get_unsigned_number(Settings.KEY_SNAP_ASSISTANT_ANIMATION_TIME); }
+    static set SNAP_ASSISTANT_ANIMATION_TIME(val: number) { set_unsigned_number(Settings.KEY_SNAP_ASSISTANT_ANIMATION_TIME, val); }
+
+    static get TILE_PREVIEW_ANIMATION_TIME(): number { return get_unsigned_number(Settings.KEY_TILE_PREVIEW_ANIMATION_TIME); }
+    static set TILE_PREVIEW_ANIMATION_TIME(val: number) { set_unsigned_number(Settings.KEY_TILE_PREVIEW_ANIMATION_TIME, val); }
+
+    static get ENABLE_TILING_SYSTEM_WINDOWS_SUGGESTIONS(): boolean { return get_boolean(Settings.KEY_ENABLE_TILING_SYSTEM_WINDOWS_SUGGESTIONS); }
+    static set ENABLE_TILING_SYSTEM_WINDOWS_SUGGESTIONS(val: boolean) { set_boolean(Settings.KEY_ENABLE_TILING_SYSTEM_WINDOWS_SUGGESTIONS, val); }
+
+    static get ENABLE_SNAP_ASSISTANT_WINDOWS_SUGGESTIONS(): boolean { return get_boolean(Settings.KEY_ENABLE_SNAP_ASSISTANT_WINDOWS_SUGGESTIONS); }
+    static set ENABLE_SNAP_ASSISTANT_WINDOWS_SUGGESTIONS(val: boolean) { set_boolean(Settings.KEY_ENABLE_SNAP_ASSISTANT_WINDOWS_SUGGESTIONS, val); }
+
+    static get ENABLE_SCREEN_EDGES_WINDOWS_SUGGESTIONS(): boolean { return get_boolean(Settings.KEY_ENABLE_SCREEN_EDGES_WINDOWS_SUGGESTIONS); }
+    static set ENABLE_SCREEN_EDGES_WINDOWS_SUGGESTIONS(val: boolean) { set_boolean(Settings.KEY_ENABLE_SCREEN_EDGES_WINDOWS_SUGGESTIONS, val); }
+
+    static get EDGE_TILING_MODE(): EdgeTilingMode {
+        const value = get_string(Settings.KEY_EDGE_TILING_MODE);
+        if (Object.values(EdgeTilingMode).includes(value as EdgeTilingMode))
+            return value as EdgeTilingMode;
+        return EdgeTilingMode.DEFAULT;
+    }
+    static set EDGE_TILING_MODE(val: EdgeTilingMode) {
+        set_string(Settings.KEY_EDGE_TILING_MODE, val);
+    }
+
+    static get_inner_gaps(scaleFactor: number = 1): { top: number; bottom: number; left: number; right: number; } {
+        const value = this.INNER_GAPS * scaleFactor;
+        return { top: value, bottom: value, left: value, right: value };
+    }
+
+    static get_outer_gaps(scaleFactor: number = 1): { top: number; bottom: number; left: number; right: number; } {
+        const value = this.OUTER_GAPS * scaleFactor;
+        return { top: value, bottom: value, left: value, right: value };
+    }
+
+    static get_layouts_json(): Layout[] {
+        try {
+            const raw = Settings.cinnamonSettings?.getValue(Settings.KEY_SETTING_LAYOUTS_JSON) ?? '[]';
+            const layouts = JSON.parse(raw) as Layout[];
+            if (layouts.length === 0) throw new Error('At least one layout is required');
+            return layouts.filter((layout) => layout.tiles.length > 0);
+        } catch (_unused) {
+            this.reset_layouts_json();
+            const raw = Settings.cinnamonSettings?.getValue(Settings.KEY_SETTING_LAYOUTS_JSON) ?? '[]';
+            return JSON.parse(raw) as Layout[];
+        }
+    }
+
+    static get_selected_layouts(): string[][] {
+        try {
+            const raw = Settings.cinnamonSettings?.getValue(Settings.KEY_SETTING_SELECTED_LAYOUTS) ?? '[]';
+            return JSON.parse(raw) as string[][];
+        } catch (_) {
+            return [];
+        }
+    }
+
+    static reset_layouts_json() {
+        this.save_layouts_json([
+            new Layout([
+                new Tile({ x: 0, y: 0, height: 0.5, width: 0.22, groups: [1, 2] }),
+                new Tile({ x: 0, y: 0.5, height: 0.5, width: 0.22, groups: [1, 2] }),
+                new Tile({ x: 0.22, y: 0, height: 1, width: 0.56, groups: [2, 3] }),
+                new Tile({ x: 0.78, y: 0, height: 0.5, width: 0.22, groups: [3, 4] }),
+                new Tile({ x: 0.78, y: 0.5, height: 0.5, width: 0.22, groups: [3, 4] }),
+            ], 'Layout 1'),
+            new Layout([
+                new Tile({ x: 0, y: 0, height: 1, width: 0.22, groups: [1] }),
+                new Tile({ x: 0.22, y: 0, height: 1, width: 0.56, groups: [1, 2] }),
+                new Tile({ x: 0.78, y: 0, height: 1, width: 0.22, groups: [2] }),
+            ], 'Layout 2'),
+            new Layout([
+                new Tile({ x: 0, y: 0, height: 1, width: 0.33, groups: [1] }),
+                new Tile({ x: 0.33, y: 0, height: 1, width: 0.67, groups: [1] }),
+            ], 'Layout 3'),
+            new Layout([
+                new Tile({ x: 0, y: 0, height: 1, width: 0.67, groups: [1] }),
+                new Tile({ x: 0.67, y: 0, height: 1, width: 0.33, groups: [1] }),
+            ], 'Layout 4'),
+        ]);
+    }
+
+    static save_layouts_json(layouts: Layout[]) {
+        Settings.cinnamonSettings?.setValue(Settings.KEY_SETTING_LAYOUTS_JSON, JSON.stringify(layouts));
+    }
+
+    static save_selected_layouts(ids: string[][]) {
+        Settings.cinnamonSettings?.setValue(Settings.KEY_SETTING_SELECTED_LAYOUTS, JSON.stringify(ids));
+    }
+}

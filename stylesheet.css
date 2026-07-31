@@ -1,0 +1,112 @@
+/* ==========================================================================
+   Tiling Shell for Cinnamon - Theme Stylesheet
+   Designed for Linux Mint (Mint-Y, Mint-X) & Cinnamon GTK Themes
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Panel Indicator
+   -------------------------------------------------------------------------- */
+.indicator-icon {
+    icon-size: 16px;
+    padding: 0 4px;
+}
+
+.indicator-icon:hover {
+    color: theme_selected_bg_color;
+}
+
+/* --------------------------------------------------------------------------
+   2. Tile Preview Overlay (Drag-to-Tile Overlay)
+   -------------------------------------------------------------------------- */
+.tile-preview {
+    background-color: rgba(53, 132, 228, 0.25);
+    border: 2px solid rgba(53, 132, 228, 0.85);
+    border-radius: 8px;
+    transition-duration: 150ms;
+}
+
+.tile-preview-active,
+.tile-preview-selected {
+    background-color: rgba(135, 205, 114, 0.35); /* Linux Mint green highlight accent */
+    border: 2px solid #87cd72;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(135, 205, 114, 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   3. Snap Assistant (Top Screen Trigger & Tiles)
+   -------------------------------------------------------------------------- */
+.snap-assistant-container {
+    background-color: rgba(35, 38, 41, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    padding: 8px;
+}
+
+.snap-assistant-tile {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    transition-duration: 100ms;
+}
+
+.snap-assistant-tile:hover,
+.snap-assistant-tile-active {
+    background-color: rgba(135, 205, 114, 0.3);
+    border: 2px solid #87cd72;
+}
+
+/* --------------------------------------------------------------------------
+   4. Layout Switcher Popup (Ctrl+Alt+Super Layout Cycle)
+   -------------------------------------------------------------------------- */
+.layout-switcher-popup {
+    background-color: rgba(30, 32, 35, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.layout-switcher-item {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+}
+
+.layout-switcher-item-selected {
+    background-color: rgba(135, 205, 114, 0.2);
+    border: 2px solid #87cd72;
+}
+
+/* --------------------------------------------------------------------------
+   5. Layout Editor Dialog
+   -------------------------------------------------------------------------- */
+.editor-dialog {
+    background-color: rgba(35, 38, 41, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.editor-dialog-button {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: #ffffff;
+}
+
+.editor-dialog-button:hover {
+    background-color: #87cd72;
+    color: #1e2023;
+}
+
+/* --------------------------------------------------------------------------
+   6. Window Focused Border Highlight
+   -------------------------------------------------------------------------- */
+.window-border-actor {
+    border-color: #87cd72;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 8px;
+}
