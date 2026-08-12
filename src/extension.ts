@@ -226,7 +226,7 @@ class TilingShellExtension extends Extension {
 
         const monitorIndex = window.get_monitor();
         const manager = this._tilingManagers[monitorIndex];
-        if (manager) manager.untileWindow(window);
+        if (manager) manager.onUntileWindow(window, true);
     }
 
     private _onKeyboardFocusWinDirection(
@@ -327,17 +327,14 @@ class TilingShellExtension extends Extension {
         const manager = this._tilingManagers[monitorIndex];
         if (!manager) return;
 
-        unmaximizeWindow(window);
-
-        if (dir === KeyBindingsDirection.NODIRECTION) {
-            manager.onMoveCenterTile(window);
-            return;
-        }
-
         if (spanMultipleTiles) {
-            manager.onKeyboardSpanWin(window, dir);
+            // span: move window to next tile while merging its current rect
+            manager.onKeyboardMoveWindow(window, dir, true, true, true);
+        } else if (dir === KeyBindingsDirection.NODIRECTION) {
+            // center tile
+            manager.onKeyboardMoveWindow(window, KeyBindingsDirection.NODIRECTION, true, false, false);
         } else {
-            manager.onKeyboardMoveWin(window, dir);
+            manager.onKeyboardMoveWindow(window, dir, true, false, true);
         }
     }
 
@@ -348,11 +345,11 @@ class TilingShellExtension extends Extension {
         this._signals = null;
         this._keybindings?.destroy();
         this._keybindings = null;
-        this._resizingManager?.disable();
+        this._resizingManager?.destroy();
         this._resizingManager = null;
         this._windowBorderManager?.destroy();
         this._windowBorderManager = null;
-        this._raiseTogetherManager?.disable();
+        this._raiseTogetherManager?.destroy();
         this._raiseTogetherManager = null;
         if (this._indicator) {
             this._indicator.destroy();
@@ -363,7 +360,6 @@ class TilingShellExtension extends Extension {
             this._dbus = null;
         }
         GlobalState.destroy();
-        SettingsOverride.get().restore();
         SettingsOverride.destroy();
         Settings.destroy();
 

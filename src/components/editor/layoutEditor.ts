@@ -206,7 +206,7 @@ export default class LayoutEditor extends St.Widget {
             return Clutter.EVENT_PROPAGATE;
         });
         editableTile.connect('notify::hover', () => {
-            const [stageX, stageY] = Shell.Global.get().get_pointer();
+            const [stageX, stageY] = global.get_pointer();
             this._hoverWidget.handleMouseMove(
                 editableTile,
                 stageX - this.x,

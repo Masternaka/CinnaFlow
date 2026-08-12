@@ -41,7 +41,7 @@ export default class HoverLine extends St.Widget {
     public handleMouseMove(tile: EditableTilePreview, x: number, y: number) {
         this._hoveredTile = tile;
 
-        const modifier = Shell.Global.get().get_pointer()[2];
+        const modifier = global.get_pointer()[2];
 
         // split horizontally when CTRL is NOT pressed, split vertically instead
         const splitHorizontally =

@@ -42,7 +42,6 @@ export default class SuggestionsTilePreview extends TilePreview {
             Settings.KEY_ENABLE_BLUR_SELECTED_TILEPREVIEW,
             this,
             'blur',
-            Gio.SettingsBindFlags.GET,
         );*/
 
         this._recolor();

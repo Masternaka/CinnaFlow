@@ -69,7 +69,6 @@ export default class GlobalState extends GObject.Object {
             Settings.KEY_TILE_PREVIEW_ANIMATION_TIME,
             this,
             'tilePreviewAnimationTime',
-            Gio.SettingsBindFlags.GET,
         );
         this._signals.connect(
             Settings,
