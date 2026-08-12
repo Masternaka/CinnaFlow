@@ -13,9 +13,16 @@ desktop.ini
 # Log files
 *.log
 
+# JavaScript build artefacts
+node_modules/
+dist/
+
 # Temporary files
 *.tmp
 *.bak
+
+# TypeScript incremental build information
+*.tsbuildinfo
 
 # Test directories
 test/

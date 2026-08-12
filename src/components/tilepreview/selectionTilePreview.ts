@@ -31,7 +31,7 @@ export default class SelectionTilePreview extends TilePreview {
 
         this._blur = false;
 
-        Settings.bind(
+        const settingsBindingId = Settings.bind(
             Settings.KEY_ENABLE_BLUR_SELECTED_TILEPREVIEW,
             this,
             'blur',
@@ -43,11 +43,12 @@ export default class SelectionTilePreview extends TilePreview {
         ).connect('changed', () => {
             this._recolor();
         });
-        this.connect('destroy', () =>
+        this.connect('destroy', () => {
+            Settings.disconnect(settingsBindingId);
             St.ThemeContext.get_for_stage(global.get_stage()).disconnect(
                 styleChangedSignalID,
-            ),
-        );
+            );
+        });
         this._rect.width = this.gaps.left + this.gaps.right;
         this._rect.height = this.gaps.top + this.gaps.bottom;
     }

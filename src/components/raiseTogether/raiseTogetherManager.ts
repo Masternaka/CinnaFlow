@@ -52,7 +52,9 @@ export class RaiseTogetherManager {
     }
 
     private _connectRaisedSignal(window: Meta.Window) {
-        const raisedId = this._signals.connect(window, "raised", () => {
+        if (this._raiseId[window.get_id()]) return;
+
+        const raisedId = window.connect("raised", () => {
             if (!(window as ExtendedWindow).assignedTile) return; // window not tiled
 
             this._onTiledWindowRaised(window);

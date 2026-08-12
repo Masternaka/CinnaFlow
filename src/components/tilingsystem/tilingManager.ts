@@ -471,7 +471,7 @@ export class TilingManager {
         this._signals.disconnect();
         this._isGrabbingWindow = false;
         this._snapAssistingInfo.update(undefined);
-        this._edgeTilingManager.abortEdgeTiling();
+        this._edgeTilingManager.destroy();
         this._workspaceTilingLayout.forEach((tl) => tl.destroy());
         this._workspaceTilingLayout.clear();
         this._snapAssist.destroy();

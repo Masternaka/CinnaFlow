@@ -154,12 +154,12 @@ export default class Settings {
         object: any,
         property: string,
         _flags?: any,
-    ): void {
-        if (!this.cinnamonSettings) return;
+    ): number {
+        if (!this.cinnamonSettings) return -1;
         // Set initial value
         object[property] = this.cinnamonSettings.getValue(key);
         // Connect to changes
-        this.cinnamonSettings.connect(`changed::${key}`, () => {
+        return this.cinnamonSettings.connect(`changed::${key}`, () => {
             object[property] = this.cinnamonSettings.getValue(key);
         });
     }

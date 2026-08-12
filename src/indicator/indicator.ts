@@ -1,4 +1,4 @@
-import { St, Clutter, Shell, Gio } from '../gi/ext';
+import { St, Clutter } from '../gi/ext';
 import { Main } from '../utils/main';
 import Settings from '../settings/settings';
 import Layout from '../components/layout/Layout';
@@ -37,6 +37,7 @@ export default class Indicator extends PanelMenu.Button {
     private _enableScaling: boolean;
     private _path: string;
     private _keyPressEvent: number | null;
+    private _settingsBindingId: number;
 
     constructor(path: string, uuid: string) {
         super(0.5, 'Tiling Shell Indicator', false);
@@ -52,16 +53,14 @@ export default class Indicator extends PanelMenu.Button {
         }
 
         // Bind show-indicator setting to visible
-        Settings.bind(
+        this._settingsBindingId = Settings.bind(
             Settings.KEY_SHOW_INDICATOR,
             this,
             'visible',
         );
 
         const icon = new St.Icon({
-            gicon: Gio.icon_new_for_string(
-                `${path}/icons/indicator-symbolic.svg`,
-            ),
+            icon_name: 'view-grid-symbolic',
             styleClass: 'system-status-icon indicator-icon',
         });
 
@@ -270,6 +269,7 @@ export default class Indicator extends PanelMenu.Button {
     }
 
     private _onDestroy() {
+        Settings.disconnect(this._settingsBindingId);
         if (this._keyPressEvent) {
             global.stage.disconnect(this._keyPressEvent);
             this._keyPressEvent = null;

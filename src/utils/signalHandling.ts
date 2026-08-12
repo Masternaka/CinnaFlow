@@ -4,12 +4,10 @@ type ObjectWithSignals = {
 };
 
 export default class SignalHandling {
-    private readonly _signalsIds: {
-        [key: string]: { id: number; obj: ObjectWithSignals };
-    };
+    private readonly _signalsIds: { id: number; obj: ObjectWithSignals }[];
 
     constructor() {
-        this._signalsIds = {};
+        this._signalsIds = [];
     }
 
     public connect(
@@ -18,7 +16,7 @@ export default class SignalHandling {
         fun: (..._args: never[]) => void,
     ) {
         const signalId = obj.connect(key, fun);
-        this._signalsIds[key] = { id: signalId, obj };
+        this._signalsIds.push({ id: signalId, obj });
 
         return signalId;
     }
@@ -27,23 +25,21 @@ export default class SignalHandling {
     public disconnect(_obj: ObjectWithSignals): boolean;
     public disconnect(obj?: ObjectWithSignals) {
         if (!obj) {
-            const toDelete: string[] = [];
-            Object.keys(this._signalsIds).forEach((key) => {
-                this._signalsIds[key].obj.disconnect(this._signalsIds[key].id);
-                toDelete.push(key);
-            });
-            const result = toDelete.length > 0;
-            toDelete.forEach((key) => delete this._signalsIds[key]);
+            const result = this._signalsIds.length > 0;
+            this._signalsIds.forEach(({ id, obj: signalObject }) =>
+                signalObject.disconnect(id),
+            );
+            this._signalsIds.length = 0;
             return result;
         } else {
-            const keyFound = Object.keys(this._signalsIds).find(
-                (key) => this._signalsIds[key].obj === obj,
+            const signalIndex = this._signalsIds.findIndex(
+                (signal) => signal.obj === obj,
             );
-            if (keyFound) {
-                obj.disconnect(this._signalsIds[keyFound].id);
-                delete this._signalsIds[keyFound];
-            }
-            return keyFound;
+            if (signalIndex === -1) return false;
+
+            const [{ id }] = this._signalsIds.splice(signalIndex, 1);
+            obj.disconnect(id);
+            return true;
         }
     }
 }

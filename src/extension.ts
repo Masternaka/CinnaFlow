@@ -16,7 +16,6 @@ import Indicator from './indicator/indicator';
 import DBus from './dbus';
 import { KeyBindingsDirection, FocusSwitchDirection } from './keybindings';
 import KeyBindings from './keybindings';
-import SettingsOverride from './settings/settingsOverride';
 import { ResizingManager } from './components/tilingsystem/resizeManager';
 import Tile from './components/layout/Tile';
 import { WindowBorderManager } from './components/windowBorder/windowBorderManager';
@@ -360,7 +359,7 @@ class TilingShellExtension extends Extension {
             this._dbus = null;
         }
         GlobalState.destroy();
-        SettingsOverride.destroy();
+        TilingShellWindowManager.destroy();
         Settings.destroy();
 
         OverriddenAltTab.disable();

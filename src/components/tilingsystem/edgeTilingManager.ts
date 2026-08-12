@@ -59,6 +59,7 @@ export default class EdgeTilingManager extends GObject.Object {
 
     // current active zone
     private _activeEdgeTile: Mtk.Rectangle | null;
+    private _settingsBindingIds: number[];
 
     constructor(initialWorkArea: Mtk.Rectangle) {
         super();
@@ -71,20 +72,25 @@ export default class EdgeTilingManager extends GObject.Object {
         this._leftCenter = buildRectangle();
         this._rightCenter = buildRectangle();
         this._activeEdgeTile = null;
+        this._settingsBindingIds = [];
         this._currentLayout = null;
         this.workarea = initialWorkArea;
         this._quarterActivationPercentage = Settings.QUARTER_TILING_THRESHOLD;
         this._debug = logger('EdgeTilingManager');
-        Settings.bind(
-            Settings.KEY_QUARTER_TILING_THRESHOLD,
-            this,
-            'quarterActivationPercentage',
+        this._settingsBindingIds.push(
+            Settings.bind(
+                Settings.KEY_QUARTER_TILING_THRESHOLD,
+                this,
+                'quarterActivationPercentage',
+            ),
         );
         this._edgeTilingOffset = Settings.EDGE_TILING_OFFSET;
-        Settings.bind(
-            Settings.KEY_EDGE_TILING_OFFSET,
-            this,
-            'edgeTilingOffset',
+        this._settingsBindingIds.push(
+            Settings.bind(
+                Settings.KEY_EDGE_TILING_OFFSET,
+                this,
+                'edgeTilingOffset',
+            ),
         );
     }
 
@@ -113,6 +119,12 @@ export default class EdgeTilingManager extends GObject.Object {
     public set workspaceIndex(index: number) {
         this._workspaceIndex = index;
         this._updateCurrentLayout();
+    }
+
+    public destroy() {
+        this._settingsBindingIds.forEach((id) => Settings.disconnect(id));
+        this._settingsBindingIds = [];
+        this.abortEdgeTiling();
     }
 
     private _updateCurrentLayout() {

@@ -66,6 +66,7 @@ class SnapAssistContent extends St.BoxLayout {
     private _snapAssistantThreshold: number;
     private _snapAssistantAnimationTime: number;
     private _monitorIndex: number;
+    private _settingsBindingIds: number[];
 
     constructor(container: St.Widget, monitorIndex: number) {
         super({
@@ -83,26 +84,29 @@ class SnapAssistContent extends St.BoxLayout {
         this._isEnlarged = false;
         this._showing = true;
         this._padding = 0;
+        this._settingsBindingIds = [];
         this._blur = false;
         this._snapAssistantAnimationTime = 100;
         this._monitorIndex = monitorIndex;
         this._snapAssistantThreshold =
             54 * getMonitorScalingFactor(this._monitorIndex);
 
-        Settings.bind(
-            Settings.KEY_ENABLE_BLUR_SNAP_ASSISTANT,
-            this,
-            'blur',
+        this._settingsBindingIds.push(
+            Settings.bind(Settings.KEY_ENABLE_BLUR_SNAP_ASSISTANT, this, 'blur'),
         );
-        Settings.bind(
-            Settings.KEY_SNAP_ASSISTANT_THRESHOLD,
-            this,
-            'snapAssistantThreshold',
+        this._settingsBindingIds.push(
+            Settings.bind(
+                Settings.KEY_SNAP_ASSISTANT_THRESHOLD,
+                this,
+                'snapAssistantThreshold',
+            ),
         );
-        Settings.bind(
-            Settings.KEY_SNAP_ASSISTANT_ANIMATION_TIME,
-            this,
-            'snapAssistantAnimationTime',
+        this._settingsBindingIds.push(
+            Settings.bind(
+                Settings.KEY_SNAP_ASSISTANT_ANIMATION_TIME,
+                this,
+                'snapAssistantAnimationTime',
+            ),
         );
 
         this._applyStyle();
@@ -123,7 +127,11 @@ class SnapAssistContent extends St.BoxLayout {
             },
         );
 
-        this.connect('destroy', () => this._signals.disconnect());
+        this.connect('destroy', () => {
+            this._signals.disconnect();
+            this._settingsBindingIds.forEach((id) => Settings.disconnect(id));
+            this._settingsBindingIds = [];
+        });
 
         this.close();
     }

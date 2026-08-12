@@ -36,6 +36,7 @@ export default class GlobalState extends GObject.Object {
     private static _instance: GlobalState | null;
 
     private _signals: SignalHandling;
+    private _settingsBindingId: number;
     private _layouts: Layout[];
     private _tilePreviewAnimationTime: number;
     // if workspaces are reordered, we use this map to know which layouts where selected
@@ -51,6 +52,7 @@ export default class GlobalState extends GObject.Object {
     static destroy() {
         if (this._instance) {
             this._instance._signals.disconnect();
+            Settings.disconnect(this._instance._settingsBindingId);
             this._instance._layouts = [];
             this._instance = null;
         }
@@ -65,7 +67,7 @@ export default class GlobalState extends GObject.Object {
         this._selected_layouts = new Map();
         this.validate_selected_layouts();
 
-        Settings.bind(
+        this._settingsBindingId = Settings.bind(
             Settings.KEY_TILE_PREVIEW_ANIMATION_TIME,
             this,
             'tilePreviewAnimationTime',
