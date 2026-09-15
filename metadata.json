@@ -1,9 +1,8 @@
 {
-  "uuid": "tilingshell@cinnamon",
-  "name": "Tiling Shell",
-  "description": "Advanced tiling window management for Cinnamon. Supports snap assistant, multiple monitors, customizable layouts, keyboard shortcuts, edge tiling and more.",
-  "version": "1.0",
-  "cinnamon-version": ["5.6", "5.8", "6.0", "6.2", "6.4"],
-  "url": "https://github.com/Masternaka/CinnaFlow",
-  "max-instances": "1"
+    "uuid": "cinnamon-tiling-shell@local",
+    "name": "Cinnamon Tiling Shell",
+    "description": "Tiling configurable inspire de Tiling Shell, adapte a Cinnamon.",
+    "version": 1,
+    "cinnamon-version": ["6.0", "6.2", "6.4", "6.6"],
+    "max-instances": 1
 }

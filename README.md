@@ -1,32 +1,35 @@
-# CinnaFlow
+# Cinnamon Tiling Shell
 
-CinnaFlow est une extension Cinnamon de gestion de fenêtres en mosaïque. Elle propose des dispositions personnalisables, l'assistant d'ancrage, le redimensionnement de fenêtres adjacentes, les raccourcis clavier, le tiling par les bords et la gestion multi-écran.
+MVP de gestion de tuiles pour Cinnamon, inspiré de l’architecture et des fonctionnalités de [Tiling Shell](https://github.com/domferr/tilingshell), mais réécrit pour les API Cinnamon/Muffin.
 
-## Prérequis
+## Fonctionnalités actuelles
 
-- Cinnamon 5.6 à 6.4 ;
-- Node.js et npm, uniquement pour construire l'extension depuis les sources.
+- quatre dispositions : deux ou trois colonnes, colonne principale avec pile et grille 2 × 2 ;
+- raccourcis configurables pour déplacer la fenêtre active entre les tuiles ;
+- prise en charge de plusieurs moniteurs, de leur zone de travail et des marges ;
+- indicateur de panneau pour choisir une disposition ;
+- restauration de la géométrie initiale de la fenêtre.
 
-## Installation depuis les sources
+## Installation de développement
 
-```sh
-npm install
-npm run build
-npm run install:extension
-```
-
-Activez ensuite **CinnaFlow** dans l'application Extensions de Cinnamon. Après une mise à jour, désactivez puis réactivez l'extension, ou redémarrez Cinnamon.
-
-## Développement
+Le dossier doit porter le même nom que l’UUID. Depuis ce dépôt :
 
 ```sh
-npm run lint
-npm run prettier:check
-npm run build
+mkdir -p ~/.local/share/cinnamon/extensions
+ln -s "$(pwd)" ~/.local/share/cinnamon/extensions/cinnamon-tiling-shell@local
 ```
 
-Les préférences de l'extension permettent de définir les dispositions, les marges, les raccourcis, l'assistant d'ancrage et les comportements de focus.
+Ensuite, ouvrez **Paramètres système → Extensions**, activez « Cinnamon Tiling Shell », puis configurez-le. Rechargez Cinnamon avec `Alt` + `F2`, `r`, Entrée (X11), ou reconnectez-vous sous Wayland.
+
+Les raccourcis par défaut sont `Super` + `Alt` + flèches. Ils évitent volontairement les raccourcis natifs `Super` + flèches de Cinnamon.
+
+## Feuille de route de portage
+
+1. Éditeur graphique et import/export des dispositions JSON de Tiling Shell.
+2. Prévisualisation pendant le déplacement d’une fenêtre et Snap Assistant au bord supérieur.
+3. Remplissage des tuiles libres, auto-tiling et navigation directionnelle entre fenêtres.
+4. Redimensionnement coordonné de fenêtres adjacentes et tests sur les versions Cinnamon visées.
 
 ## Licence
 
-GPL-3.0.
+GPL-3.0-or-later. Le projet source d’inspiration, Tiling Shell, est aussi sous GPL-3.0-or-later ; son code GNOME Shell n’est pas directement réutilisable ici.
