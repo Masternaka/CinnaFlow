@@ -53,5 +53,54 @@
         "type": "keybinding",
         "default": "<Super><Alt>Down",
         "description": "Placer ou deplacer la fenetre vers la tuile du bas"
+    },
+    "untile": {
+        "type": "keybinding",
+        "default": "<Super><Alt>BackSpace",
+        "description": "Restaurer la fenetre active (detuiler)"
+    },
+    "cycle-layout": {
+        "type": "keybinding",
+        "default": "<Super><Alt>space",
+        "description": "Changer de disposition (disposition suivante)"
+    },
+    "enable-snap-preview": {
+        "type": "checkbox",
+        "default": true,
+        "description": "Activer la previsualisation au glisser-deposer"
+    },
+    "snap-modifier": {
+        "type": "combobox",
+        "default": "ctrl",
+        "description": "Touche d'activation de la previsualisation",
+        "tooltip": "Maintenez cette touche pendant le deplacement d'une fenetre pour afficher la tuile cible.",
+        "options": {
+            "Touche Ctrl": "ctrl",
+            "Touche Alt": "alt",
+            "Toujours actif pendant le deplacement": "always"
+        }
+    },
+    "enable-snap-assistant": {
+        "type": "checkbox",
+        "default": true,
+        "description": "Activer le Snap Assistant au bord superieur de l'ecran",
+        "tooltip": "Affiche une barre d'ancrage rapide au sommet de l'ecran lorsqu'une fenetre est approchee du bord haut."
+    },
+    "sync-layout-on-snap": {
+        "type": "checkbox",
+        "default": true,
+        "description": "Appliquer la disposition de la carte choisie dans le Snap Assistant",
+        "tooltip": "Lorsqu'une fenetre est deposee sur une carte d'une autre disposition, celle-ci devient la disposition active du bureau."
+    },
+    "debug": {
+        "type": "checkbox",
+        "default": false,
+        "description": "Journal detaille (mode debug)",
+        "tooltip": "Trace les evenements de l'extension dans ~/.xsession-errors. A activer uniquement pour diagnostiquer un probleme."
+    },
+    "open-layouts-folder": {
+        "type": "button",
+        "description": "Ouvrir le dossier des dispositions personnalisees (JSON)",
+        "callback": "_openLayoutsFolder"
     }
 }

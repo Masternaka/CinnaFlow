@@ -5,10 +5,13 @@ MVP de gestion de tuiles pour Cinnamon, inspiré de l’architecture et des fonc
 ## Fonctionnalités actuelles
 
 - quatre dispositions : deux ou trois colonnes, colonne principale avec pile et grille 2 × 2 ;
-- raccourcis configurables pour déplacer la fenêtre active entre les tuiles ;
-- prise en charge de plusieurs moniteurs, de leur zone de travail et des marges ;
-- indicateur de panneau pour choisir une disposition ;
-- restauration de la géométrie initiale de la fenêtre.
+- prévisualisation visuelle semi-transparente et ancrage au glisser-déposer de fenêtre (en maintenant `Ctrl` ou `Alt`, paramétrable) ;
+- raccourcis configurables pour déplacer la fenêtre active entre les tuiles et naviguer fluidement entre moniteurs ;
+- prise en charge complète du multi-écran, des zones de travail respectives et des marges intérieures/extérieures symétriques ;
+- indicateur de panneau interactif pour choisir une disposition ou restaurer la fenêtre ;
+- notification OSD à l'écran lors du changement rapide de disposition ;
+- restauration fidèle de la géométrie initiale et de l'état maximisé de la fenêtre.
+
 
 ## Installation de développement
 
@@ -21,7 +24,10 @@ ln -s "$(pwd)" ~/.local/share/cinnamon/extensions/cinnamon-tiling-shell@local
 
 Ensuite, ouvrez **Paramètres système → Extensions**, activez « Cinnamon Tiling Shell », puis configurez-le. Rechargez Cinnamon avec `Alt` + `F2`, `r`, Entrée (X11), ou reconnectez-vous sous Wayland.
 
-Les raccourcis par défaut sont `Super` + `Alt` + flèches. Ils évitent volontairement les raccourcis natifs `Super` + flèches de Cinnamon.
+Les raccourcis par défaut évitent les raccourcis natifs `Super` + flèches de Cinnamon et sont entièrement configurables :
+- `Super` + `Alt` + flèches : déplacer ou placer la fenêtre active vers une tuile ;
+- `Super` + `Alt` + `Retour arrière` : restaurer la géométrie d'origine de la fenêtre (détuiler) ;
+- `Super` + `Alt` + `Espace` : changer de disposition active (avec notification à l'écran).
 
 ## Feuille de route de portage
 
