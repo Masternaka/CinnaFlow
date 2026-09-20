@@ -426,6 +426,7 @@ décision go/no-go écrite dans la ROADMAP.
 | 2026-09-16 | **Revue de code** — 10 constats corrigés (4 ⚠️, 6 💡) : zone d'activation du Snap Assistant, rebuild par moniteur, surlignage différentiel, sync de la combobox `layout`, détection de changement du tick, sync de disposition au dépôt, rechargement à chaud des layouts, liste de raccourcis unique, suppression de deux codes morts. Nouvelle clé `sync-layout-on-snap`. |
 | 2026-09-16 | **Vérifications** — syntaxe `extension.js` OK (JavaScriptCore), JSON OK (`jq`), cohérence des appels OK. Recette runtime **non faite** (machine de développement macOS). |
 | 2026-09-16 | **Étape 2** — `scripts/check.sh` (syntaxe, JSON, cycle de vie), CI GitHub Actions (`.github/workflows/ci.yml`), `docs/CHECKLIST.md`, logger `[CinnaFlow]` + préférence `debug` (nouvelle clé de schéma). Exécution locale du script : toutes les vérifications passent. |
+| 2026-09-20 | Correctif de cycle de vie : les acteurs de prévisualisation et du Snap Assistant sont maintenant créés dans `enable()` et recréés après chaque `disable()`. Vérifications statiques repassées ; recette Cinnamon/X11 toujours en attente. |
 
 ---
 

@@ -11,6 +11,11 @@ MVP de gestion de tuiles pour Cinnamon, inspiré de l’architecture et des fonc
 - indicateur de panneau interactif pour choisir une disposition ou restaurer la fenêtre ;
 - notification OSD à l'écran lors du changement rapide de disposition ;
 - restauration fidèle de la géométrie initiale et de l'état maximisé de la fenêtre.
+- Snap Assistant v1 au bord supérieur, activable dans les préférences ;
+- chargement de dispositions JSON depuis `~/.config/cinnaflow/layouts/`.
+
+> Cible actuelle : Cinnamon 6.0 à 6.6 sous X11. La recette runtime reste à réaliser
+> sur une machine Cinnamon ; voir [`docs/CHECKLIST.md`](docs/CHECKLIST.md).
 
 
 ## Installation de développement
@@ -22,7 +27,7 @@ mkdir -p ~/.local/share/cinnamon/extensions
 ln -s "$(pwd)" ~/.local/share/cinnamon/extensions/cinnamon-tiling-shell@local
 ```
 
-Ensuite, ouvrez **Paramètres système → Extensions**, activez « Cinnamon Tiling Shell », puis configurez-le. Rechargez Cinnamon avec `Alt` + `F2`, `r`, Entrée (X11), ou reconnectez-vous sous Wayland.
+Ensuite, ouvrez **Paramètres système → Extensions**, activez « Cinnamon Tiling Shell », puis configurez-le. Rechargez Cinnamon avec `Alt` + `F2`, `r`, Entrée (X11).
 
 Les raccourcis par défaut évitent les raccourcis natifs `Super` + flèches de Cinnamon et sont entièrement configurables :
 - `Super` + `Alt` + flèches : déplacer ou placer la fenêtre active vers une tuile ;
@@ -31,10 +36,12 @@ Les raccourcis par défaut évitent les raccourcis natifs `Super` + flèches de 
 
 ## Feuille de route de portage
 
-1. Éditeur graphique et import/export des dispositions JSON de Tiling Shell.
-2. Prévisualisation pendant le déplacement d’une fenêtre et Snap Assistant au bord supérieur.
-3. Remplissage des tuiles libres, auto-tiling et navigation directionnelle entre fenêtres.
-4. Redimensionnement coordonné de fenêtres adjacentes et tests sur les versions Cinnamon visées.
+1. Valider le MVP sur Cinnamon/X11 et maintenir le cycle activation → désactivation → réactivation.
+2. Modulariser l’extension, puis rendre les dispositions persistantes et compatibles avec Tiling Shell.
+3. Ajouter edge tiling et auto-tiling.
+4. Ajouter smart resize, sélection multi-tuiles et éditeur graphique.
+
+Le détail technique et le statut de référence sont dans [`PLAN-IMPLEMENTATION.md`](PLAN-IMPLEMENTATION.md).
 
 ## Licence
 

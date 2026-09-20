@@ -1,6 +1,10 @@
 # Feuille de route — Cinnamon Tiling Shell
 
-Le MVP actuel couvre les dispositions prédéfinies, les raccourcis clavier, les marges, le multi-écran et le choix de disposition dans le panneau. Il reprend le principe de tuiles normalisées de [Tiling Shell](https://github.com/domferr/tilingshell), mais son code est réécrit pour Cinnamon et Muffin.
+Le MVP actuel couvre les dispositions prédéfinies, les raccourcis clavier, les marges, le multi-écran, le choix de disposition dans le panneau, la prévisualisation au drag, le Snap Assistant v1 et le chargement de JSON personnalisés. Il reprend le principe de tuiles normalisées de [Tiling Shell](https://github.com/domferr/tilingshell), mais son code est réécrit pour Cinnamon et Muffin.
+
+> Le statut technique de référence est [`PLAN-IMPLEMENTATION.md`](PLAN-IMPLEMENTATION.md).
+> Les fonctions déjà codées restent **à valider sous Cinnamon/X11** avec
+> [`docs/CHECKLIST.md`](docs/CHECKLIST.md).
 
 ## Vue d'ensemble
 
@@ -10,20 +14,20 @@ Ce document fusionne la feuille de route produit et le plan d’implémentation 
 - plan de mise en œuvre détaillé,
 - checklist de validation avant chaque livraison.
 
-Les deux fonctionnalités majeures à venir sont :
+Les deux chantiers majeurs à venir sont :
 
-1. le Snap Assistant au bord supérieur,
-2. les dispositions personnalisées avec import/export JSON.
+1. la persistance des dispositions par moniteur/espace de travail et la compatibilité JSON complète ;
+2. l’auto-tiling et l’éditeur de dispositions.
 
 ## Écart fonctionnel avec Tiling Shell
 
 | Fonctionnalité | État dans le MVP Cinnamon |
 | --- | --- |
-| Dispositions personnalisées et éditeur graphique | À faire |
-| Import/export JSON de dispositions | À faire |
-| Prévisualisation des tuiles pendant le déplacement | Disponible |
-| Activation avec `Ctrl` pendant un glisser-déposer | Disponible |
-| Snap Assistant au bord supérieur | À faire |
+| Dispositions personnalisées et éditeur graphique | Chargement JSON partiel ; éditeur à faire |
+| Import/export JSON de dispositions | Import partiel ; export non exposé et interopérabilité à faire |
+| Prévisualisation des tuiles pendant le déplacement | Codée, recette Cinnamon/X11 en attente |
+| Activation avec `Ctrl` pendant un glisser-déposer | Codée, recette Cinnamon/X11 en attente |
+| Snap Assistant au bord supérieur | v1 codée, recette Cinnamon/X11 en attente |
 | Sélection de plusieurs tuiles avec `Alt` | À faire |
 | Tuilage aux bords de l'écran | À faire |
 | Auto-tiling des nouvelles fenêtres | À faire |
@@ -42,43 +46,33 @@ Les deux fonctionnalités majeures à venir sont :
 
 ## Backlog priorisé
 
-### Priorité 1 — Dispositions personnalisées + JSON
+### Priorité 1 — État persistant + JSON compatible Tiling Shell
 
 - Définir un format JSON compatible avec les layouts de Tiling Shell.
+- Conserver les layouts sélectionnés par moniteur et espace de travail.
 - Ajouter l’import/export des layouts.
-- Préparer l’éditeur de base : division horizontale/verticale, suppression et redimensionnement des tuiles.
-- Charger dynamiquement les fichiers depuis `~/.config/cinnaflow/layouts/`.
 - Valider les structures avant intégration dans le moteur.
-- Ajouter le bouton d’ouverture du dossier utilisateur dans les paramètres.
+- Brancher l’export et le bouton d’ouverture du dossier déjà présents.
 
-### Priorité 2 — Prévisualisation au déplacement
+### Priorité 2 — Fiabiliser le drag et la prévisualisation
 
-- Écouter les opérations de déplacement de fenêtre fournies par Muffin.
-- Afficher une surcouche de prévisualisation dans la zone de travail.
-- Détecter la tuile sous le pointeur lors du drag.
-- Appliquer la tuile au relâchement de la souris.
-- Activer la fonction avec `Ctrl`, configurable dans les préférences.
+- Exécuter la recette Cinnamon/X11 des interactions existantes.
+- Restaurer la taille d’origine au début du drag d’une fenêtre tuilée.
+- Ajouter edge tiling et vérifier la coexistence avec le snapping natif de Muffin.
 
-### Priorité 3 — Snap Assistant au bord supérieur
+### Priorité 3 — Auto-tiling et espaces de travail
 
-- Afficher la barre d’aide à moins de 35 px du bord haut.
-- Construire des mini-tuiles interactives pour chaque disposition.
-- Survoler une tuile pour l’illuminer et afficher la prévisualisation large.
-- Poser la fenêtre dans la tuile ciblée au relâchement.
-- Garder cette fonction activable/désactivable via les paramètres.
+- Placer les nouvelles fenêtres dans la meilleure tuile libre.
+- Proposer les fenêtres pouvant compléter les tuiles vides.
 
-### Priorité 4 — Automatisation et espaces de travail
+### Priorité 4 — Éditeur et gestion avancée
 
-- Sauvegarder la disposition sélectionnée par moniteur et par espace de travail.
-- Proposer le meilleur emplacement libre à l’ouverture d’une fenêtre.
-- Suggérer les fenêtres pouvant remplir les tuiles vides.
+- Créer un éditeur de layouts.
+- Ajouter sélection multi-tuiles, smart resize et focus directionnel.
 
-### Priorité 5 — Gestion avancée des fenêtres
+### Priorité 5 — Fonctions risquées
 
-- Sélection de plusieurs tuiles adjacentes avec `Alt`.
-- Redimensionnement intelligent des fenêtres voisines.
-- Focus directionnel et menu contextuel de tuilage.
-- Améliorations visuelles supplémentaires.
+- Prototyper le menu contextuel, la bordure de fenêtre et le groupement Alt-Tab sur des branches isolées.
 
 ## Plan d’implémentation détaillé
 
@@ -248,7 +242,7 @@ Dans [settings-schema.json](settings-schema.json) :
 ## Vérification à chaque étape
 
 - Tester avec une, deux et trois sorties, y compris diverses résolutions et échelles.
-- Tester sur X11 et Wayland quand Cinnamon/Muffin le permet.
+- Tester sur Cinnamon 6.0 à 6.6 sous X11 (Wayland est hors périmètre).
 - Vérifier les fenêtres normales, maximisées, plein écran, dialogues et fenêtres toujours au-dessus.
 - Vérifier que la désactivation de l’extension supprime les raccourcis, acteurs et signaux créés.
 

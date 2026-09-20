@@ -694,8 +694,10 @@ class TilingExtension {
         this.layoutEngine = new LayoutEngine();
         this.tracker = new WindowTracker();
         this.indicator = new IndicatorManager(() => this._getPanel());
-        this.previewOverlay = new PreviewOverlay();
-        this.snapAssistant = new SnapAssistant();
+        // Visual actors belong to an enabled instance only. Cinnamon can call
+        // enable() again on the same module instance after disable().
+        this.previewOverlay = null;
+        this.snapAssistant = null;
         this._hotkeys = [];
         // Single source of truth for hotkeys: drives both the settings reload
         // bindings and the keybinding registrations.
@@ -719,6 +721,14 @@ class TilingExtension {
     }
 
     enable() {
+        // Recreate actors destroyed by disable() before connecting signals.
+        // Keeping their construction out of init() also avoids actors from a
+        // disabled extension being added to Main.uiGroup.
+        if (!this.previewOverlay)
+            this.previewOverlay = new PreviewOverlay();
+        if (!this.snapAssistant)
+            this.snapAssistant = new SnapAssistant();
+
         this.settings = new Settings.ExtensionSettings(this, UUID);
         Log.setDebug(this.settings.getValue('debug'));
         this.settings.bindProperty(Settings.BindingDirection.IN,
@@ -750,8 +760,14 @@ class TilingExtension {
         this._removeHotkeys();
         this._disconnectGrabSignals();
         this._resetDrag();
-        this.previewOverlay.destroy();
-        this.snapAssistant.destroy();
+        if (this.previewOverlay) {
+            this.previewOverlay.destroy();
+            this.previewOverlay = null;
+        }
+        if (this.snapAssistant) {
+            this.snapAssistant.destroy();
+            this.snapAssistant = null;
+        }
         this.indicator.destroy();
         this.tracker.disconnectAll();
         if (this.settings) {
@@ -1065,8 +1081,10 @@ class TilingExtension {
             this._dragTimeoutId = 0;
         }
 
-        this.previewOverlay.hide();
-        this.snapAssistant.hide();
+        if (this.previewOverlay)
+            this.previewOverlay.hide();
+        if (this.snapAssistant)
+            this.snapAssistant.hide();
         this._draggedWindow = null;
         this._lastPointerX = null;
         this._lastPointerY = null;
