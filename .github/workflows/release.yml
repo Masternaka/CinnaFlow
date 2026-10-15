@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Vérifier et préparer la release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Vérifications statiques
+        run: bash scripts/check.sh
+
+      - name: Valider la version et créer le ZIP
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python3 scripts/package-release.py "$RELEASE_TAG" --output-dir dist
+
+      - name: Créer la release en brouillon
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" "dist/CinnaFlow-${RELEASE_TAG}.zip" \
+            --verify-tag --draft --generate-notes --title "CinnaFlow ${RELEASE_TAG}"

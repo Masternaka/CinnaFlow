@@ -34,6 +34,46 @@ Les raccourcis par défaut évitent les raccourcis natifs `Super` + flèches de 
 - `Super` + `Alt` + `Retour arrière` : restaurer la géométrie d'origine de la fenêtre (détuiler) ;
 - `Super` + `Alt` + `Espace` : changer de disposition active (avec notification à l'écran).
 
+## Releases GitHub
+
+Le workflow `.github/workflows/release.yml` prépare une **release en brouillon**
+à chaque push d'un tag `vN`, où `N` correspond exactement à la version entière
+positive de `metadata.json` (actuellement `1`, donc `v1`). Les vérifications
+statiques doivent réussir avant la création du ZIP et de la release.
+
+Après avoir intégré les changements sur `main`, créer le tag sur le commit à livrer :
+
+```sh
+git switch main
+git pull --ff-only
+bash scripts/check.sh
+git tag v1
+git push origin v1
+```
+
+Pour la release suivante, incrémenter d'abord `version` dans `metadata.json`
+et utiliser le tag correspondant, par exemple `v2`. Ne pas déplacer un tag déjà
+publié. Aucun secret supplémentaire n'est nécessaire : le workflow utilise le
+jeton GitHub Actions avec la permission `contents: write`.
+
+La release contient des notes générées automatiquement et `CinnaFlow-vN.zip`.
+L'archive contient le dossier `cinnamon-tiling-shell@local` avec `extension.js`,
+`metadata.json`, `settings-schema.json`, `stylesheet.css` et `LICENSE`.
+Pour une installation depuis le ZIP, extraire ce dossier dans
+`~/.local/share/cinnamon/extensions/`, en préservant toute installation existante.
+
+Avant de publier le brouillon depuis GitHub Releases, exécuter la recette
+[`docs/CHECKLIST.md`](docs/CHECKLIST.md) sous Cinnamon/X11. La CI ne valide pas
+les interactions graphiques. Le workflow ne publie pas sur Cinnamon Spices.
+Si une release existe déjà pour ce tag, la création échoue sans la remplacer ;
+reprendre le brouillon existant dans GitHub Releases.
+
+Pour vérifier le packaging localement, sans créer de release :
+
+```sh
+python3 scripts/package-release.py v1 --output-dir dist
+```
+
 ## Feuille de route de portage
 
 1. Valider le MVP sur Cinnamon/X11 et maintenir le cycle activation → désactivation → réactivation.
