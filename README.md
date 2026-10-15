@@ -41,7 +41,14 @@ Le workflow `.github/workflows/release.yml` prépare une **release en brouillon*
 positive de `metadata.json` (actuellement `1`, donc `v1`). Les vérifications
 statiques doivent réussir avant la création du ZIP et de la release.
 
-Après avoir intégré les changements sur `main`, créer le tag sur le commit à livrer :
+Depuis le site GitHub, ouvrir **Actions → Release → Run workflow**, choisir
+la branche `main`, saisir `v1` dans le champ du tag, puis cliquer sur
+**Run workflow**. Après les vérifications, le workflow crée le tag sur le commit
+sélectionné et prépare le brouillon avec son ZIP dans **Releases**. Un tag
+existant sur un autre commit provoque un échec ; il n'est jamais déplacé.
+
+Depuis un terminal, après avoir intégré les changements sur `main`, on peut
+aussi déclencher le workflow en poussant le tag sur le commit à livrer :
 
 ```sh
 git switch main

@@ -1,6 +1,12 @@
 name: Release
 
 on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag correspondant à metadata.json (exemple : v1)'
+        required: true
+        type: string
   push:
     tags:
       - 'v*'
@@ -9,7 +15,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ inputs.tag || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -18,11 +24,14 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Installer Node.js
         uses: actions/setup-node@v6
@@ -38,15 +47,26 @@ jobs:
         run: bash scripts/check.sh
 
       - name: Valider la version et créer le ZIP
-        env:
-          RELEASE_TAG: ${{ github.ref_name }}
         run: python3 scripts/package-release.py "$RELEASE_TAG" --output-dir dist
+
+      - name: Vérifier le commit d'un tag existant
+        run: |
+          if git show-ref --verify --quiet "refs/tags/$RELEASE_TAG"; then
+            test "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")" = "$GITHUB_SHA" || {
+              echo "Le tag existe sur un autre commit. Il ne sera pas déplacé."
+              exit 1
+            }
+          fi
 
       - name: Créer la release en brouillon
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.ref_name }}
         run: |
+          options=()
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            options+=(--verify-tag)
+          fi
           gh release create "$RELEASE_TAG" "dist/CinnaFlow-${RELEASE_TAG}.zip" \
-            --verify-tag --draft --generate-notes --title "CinnaFlow ${RELEASE_TAG}"
+            --target "$GITHUB_SHA" "${options[@]}" \
+            --draft --generate-notes --title "CinnaFlow ${RELEASE_TAG}"
