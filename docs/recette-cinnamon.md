@@ -1,7 +1,7 @@
 # Checklist de recette — CinnaFlow
 
 À exécuter **avant chaque merge**, et à repasser entièrement à la fin des étapes 0-1
-(voir [`PLAN-IMPLEMENTATION.md`](../PLAN-IMPLEMENTATION.md), §3 et §4).
+(voir [`plan-implementation.md`](plan-implementation.md), §3 et §4).
 
 En-tête à remplir : version de `metadata.json` · version de Cinnamon · X11 · nombre d'écrans.
 

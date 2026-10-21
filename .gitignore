@@ -25,7 +25,7 @@ dist/
 *.tsbuildinfo
 
 # Test directories
-test/
+#test/
 tmp/
 
 # Claude Code documentation

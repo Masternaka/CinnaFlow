@@ -16,7 +16,7 @@ Légende : 🔎 code fait, recette à valider · ⏳ à faire
 |---|---|---|
 | 0 — Débloquer le chargement | 🔎 | `init`/`enable`/`disable` module-level ; `enable()` retourne l'instance |
 | 1 — Corriger les bugs runtime | 🔎 | 7 correctifs + 10 constats de revue corrigés |
-| 2 — Filet de sécurité | 🔎 | `scripts/check.sh`, CI GitHub Actions, `docs/CHECKLIST.md`, logger + préférence `debug` |
+| 2 — Filet de sécurité | 🔎 | `scripts/check.sh`, CI GitHub Actions, `docs/recette-cinnamon.md`, logger + préférence `debug` |
 | 3 — Découpage modulaire | ⏳ | — |
 | 4 — État persistant + JSON interopérable | ⏳ | 1/4 déjà fait (options de la combobox `layout`) |
 | 5 — Fiabiliser le cœur | ⏳ | 2/5 déjà faits (sync disposition, mémoire du moniteur) |
@@ -42,7 +42,7 @@ Légende : 🔎 code fait, recette à valider · ⏳ à faire
 - multi-écran, work areas, gaps internes/externes ;
 - chargement de layouts JSON personnalisés (`~/.config/cinnaflow/layouts/`) ;
 - cycle de vie Cinnamon conforme et correctifs de robustesse (étapes 0-1) ;
-- filet de sécurité : `scripts/check.sh`, CI GitHub Actions, `docs/CHECKLIST.md`,
+- filet de sécurité : `scripts/check.sh`, CI GitHub Actions, `docs/recette-cinnamon.md`,
   logger `[CinnaFlow]` + préférence `debug` (étape 2).
 
 ### Constat
@@ -215,7 +215,7 @@ développement macOS, pas de Cinnamon).
      (garde-fou contre la régression de l'étape 0).
 2. ✅ `.github/workflows/ci.yml` — exécute `bash scripts/check.sh` sur `push` vers `main`
    et sur les pull requests.
-3. ✅ `docs/CHECKLIST.md` — matrice du §3 + tests spécifiques aux étapes 0-1
+3. ✅ `docs/recette-cinnamon.md` — matrice du §3 + tests spécifiques aux étapes 0-1
    (Snap Assistant, combobox, rechargement à chaud) + journal des recettes.
 4. ✅ Logger préfixé `[CinnaFlow]` et préférence `debug` (checkbox, défaut `false`).
    *Déviation assumée :* le logger est encore **inline** dans `extension.js` (constante `Log`)
@@ -226,7 +226,7 @@ développement macOS, pas de Cinnamon).
 **Definition of Done**
 - [ ] la CI passe sur `main` (au premier push) ;
 - [ ] `bash scripts/check.sh` passe en local ;
-- [ ] la checklist `docs/CHECKLIST.md` est exécutée et verte avant chaque merge.
+- [ ] la checklist `docs/recette-cinnamon.md` est exécutée et verte avant chaque merge.
 
 ---
 
@@ -425,7 +425,7 @@ décision go/no-go écrite dans la ROADMAP.
 | 2026-09-16 | **Étape 1** — 7 correctifs runtime : propriétaire `.actor` de `PopupMenuManager`, signature `PopupMenu(sourceActor, orientation)`, CSS scopé, callback du bouton, `enumerator.close(null)`, `_getPanel()` dupliqué supprimé, nettoyage de l'état de drag (`unmanaged`). |
 | 2026-09-16 | **Revue de code** — 10 constats corrigés (4 ⚠️, 6 💡) : zone d'activation du Snap Assistant, rebuild par moniteur, surlignage différentiel, sync de la combobox `layout`, détection de changement du tick, sync de disposition au dépôt, rechargement à chaud des layouts, liste de raccourcis unique, suppression de deux codes morts. Nouvelle clé `sync-layout-on-snap`. |
 | 2026-09-16 | **Vérifications** — syntaxe `extension.js` OK (JavaScriptCore), JSON OK (`jq`), cohérence des appels OK. Recette runtime **non faite** (machine de développement macOS). |
-| 2026-09-16 | **Étape 2** — `scripts/check.sh` (syntaxe, JSON, cycle de vie), CI GitHub Actions (`.github/workflows/ci.yml`), `docs/CHECKLIST.md`, logger `[CinnaFlow]` + préférence `debug` (nouvelle clé de schéma). Exécution locale du script : toutes les vérifications passent. |
+| 2026-09-16 | **Étape 2** — `scripts/check.sh` (syntaxe, JSON, cycle de vie), CI GitHub Actions (`.github/workflows/ci.yml`), `docs/recette-cinnamon.md`, logger `[CinnaFlow]` + préférence `debug` (nouvelle clé de schéma). Exécution locale du script : toutes les vérifications passent. |
 | 2026-09-20 | Correctif de cycle de vie : les acteurs de prévisualisation et du Snap Assistant sont maintenant créés dans `enable()` et recréés après chaque `disable()`. Vérifications statiques repassées ; recette Cinnamon/X11 toujours en attente. |
 
 ---
@@ -508,6 +508,6 @@ CinnaFlow/
 ├── stylesheet.css
 ├── metadata.json
 ├── docs/
-│   └── CHECKLIST.md
+│   └── recette-cinnamon.md
 └── .github/workflows/ci.yml
 ```

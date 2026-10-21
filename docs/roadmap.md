@@ -2,9 +2,9 @@
 
 Le MVP actuel couvre les dispositions prédéfinies, les raccourcis clavier, les marges, le multi-écran, le choix de disposition dans le panneau, la prévisualisation au drag, le Snap Assistant v1 et le chargement de JSON personnalisés. Il reprend le principe de tuiles normalisées de [Tiling Shell](https://github.com/domferr/tilingshell), mais son code est réécrit pour Cinnamon et Muffin.
 
-> Le statut technique de référence est [`PLAN-IMPLEMENTATION.md`](PLAN-IMPLEMENTATION.md).
+> Le statut technique de référence est [`plan-implementation.md`](plan-implementation.md).
 > Les fonctions déjà codées restent **à valider sous Cinnamon/X11** avec
-> [`docs/CHECKLIST.md`](docs/CHECKLIST.md).
+> [`docs/recette-cinnamon.md`](recette-cinnamon.md).
 
 ## Vue d'ensemble
 
@@ -105,9 +105,9 @@ Séparer le moteur de tuilage des quatre dispositions codées en dur pour permet
 
 #### Fichiers concernés
 
-- [extension.js](extension.js)
-- [settings-schema.json](settings-schema.json)
-- [stylesheet.css](stylesheet.css)
+- [extension.js](../extension.js)
+- [settings-schema.json](../settings-schema.json)
+- [stylesheet.css](../stylesheet.css)
 
 #### Règles de validation
 
@@ -145,7 +145,7 @@ Afficher une aide visuelle au bord supérieur et permettre de poser immédiateme
 
 #### Implémentation technique
 
-- Ajout d’une classe `SnapAssistant` dans [extension.js](extension.js)
+- Ajout d’une classe `SnapAssistant` dans [extension.js](../extension.js)
 - Conteneur visuel `St.BoxLayout` dans `Main.uiGroup`
 - Construction dynamique des mini-tuiles selon la disposition active
 - Méthodes attendues :
@@ -158,7 +158,7 @@ Afficher une aide visuelle au bord supérieur et permettre de poser immédiateme
 
 #### Styles visuels
 
-Dans [stylesheet.css](stylesheet.css) :
+Dans [stylesheet.css](../stylesheet.css) :
 
 - `.snap-assistant-bar`
 - `.snap-assistant-tile`
@@ -166,7 +166,7 @@ Dans [stylesheet.css](stylesheet.css) :
 
 #### Paramètres
 
-Dans [settings-schema.json](settings-schema.json) :
+Dans [settings-schema.json](../settings-schema.json) :
 
 - `enable-snap-assistant` (`checkbox`, défaut `true`)
 - `open-layouts-folder` (`button`, appelle `_openLayoutsFolder`)
