@@ -1,6 +1,6 @@
 # Feuille de route — Cinnamon Tiling Shell
 
-Le MVP actuel couvre les dispositions prédéfinies, les raccourcis clavier, les marges, le multi-écran, le choix de disposition dans le panneau, la prévisualisation au drag, le Snap Assistant v1 et le chargement de JSON personnalisés. Il reprend le principe de tuiles normalisées de [Tiling Shell](https://github.com/domferr/tilingshell), mais son code est réécrit pour Cinnamon et Muffin.
+Le MVP actuel couvre les dispositions prédéfinies, les raccourcis clavier, les marges, le multi-écran, le choix de disposition dans le panneau, la prévisualisation au drag, le Snap Assistant v1, le chargement de JSON personnalisés, l’état par moniteur/espace, l’import/export Tiling Shell, la restauration de taille et un tuilage aux bords optionnel. Il reprend le principe de tuiles normalisées de [Tiling Shell](https://github.com/domferr/tilingshell), mais son code est réécrit pour Cinnamon et Muffin.
 
 > Le statut technique de référence est [`plan-implementation.md`](plan-implementation.md).
 > Les fonctions déjà codées restent **à valider sous Cinnamon/X11** avec
@@ -16,26 +16,27 @@ Ce document fusionne la feuille de route produit et le plan d’implémentation 
 
 Les deux chantiers majeurs à venir sont :
 
-1. la persistance des dispositions par moniteur/espace de travail et la compatibilité JSON complète ;
+1. la validation Cinnamon/X11 de l’état persistant, du JSON interopérable et du chargement modulaire, puis la fiabilisation du drag ;
 2. l’auto-tiling et l’éditeur de dispositions.
 
 ## Écart fonctionnel avec Tiling Shell
 
 | Fonctionnalité | État dans le MVP Cinnamon |
 | --- | --- |
-| Dispositions personnalisées et éditeur graphique | Chargement JSON partiel ; éditeur à faire |
-| Import/export JSON de dispositions | Import partiel ; export non exposé et interopérabilité à faire |
+| Dispositions personnalisées et éditeur graphique | Chargement JSON, import Tiling Shell et export codés ; éditeur à faire |
+| Import/export JSON de dispositions | Codé, recette Cinnamon/X11 en attente |
 | Prévisualisation des tuiles pendant le déplacement | Codée, recette Cinnamon/X11 en attente |
 | Activation avec `Ctrl` pendant un glisser-déposer | Codée, recette Cinnamon/X11 en attente |
 | Snap Assistant au bord supérieur | v1 codée, recette Cinnamon/X11 en attente |
 | Sélection de plusieurs tuiles avec `Alt` | À faire |
-| Tuilage aux bords de l'écran | À faire |
+| Tuilage aux bords de l'écran | Codé en option (`edge-tiling-mode`), recette Cinnamon/X11 en attente |
 | Auto-tiling des nouvelles fenêtres | À faire |
 | Suggestions pour remplir les tuiles libres | À faire |
-| Disposition par espace de travail et moniteur | À faire |
+| Disposition par espace de travail et moniteur | Codée, recette Cinnamon/X11 en attente |
 | Redimensionnement intelligent des fenêtres adjacentes | À faire |
 | Navigation directionnelle entre fenêtres | À faire |
 | Menu contextuel des fenêtres | À faire |
+| Restauration de la taille d'origine au drag | Codée, recette Cinnamon/X11 en attente |
 | Groupement dans Alt-Tab, bordure de fenêtre et réglages visuels avancés | À faire |
 | Raccourcis pour déplacer une fenêtre entre tuiles | Disponible |
 | Navigation fluide multi-moniteurs au clavier | Disponible |
@@ -48,17 +49,22 @@ Les deux chantiers majeurs à venir sont :
 
 ### Priorité 1 — État persistant + JSON compatible Tiling Shell
 
-- Définir un format JSON compatible avec les layouts de Tiling Shell.
-- Conserver les layouts sélectionnés par moniteur et espace de travail.
-- Ajouter l’import/export des layouts.
-- Valider les structures avant intégration dans le moteur.
-- Brancher l’export et le bouton d’ouverture du dossier déjà présents.
+**État au 27 octobre 2026 : codé, recette Cinnamon/X11 en attente.**
+
+- Format JSON compatible avec les collections de Tiling Shell.
+- Layouts sélectionnés par moniteur et espace de travail dans `~/.config/cinnaflow/state.json`.
+- Import des collections Tiling Shell et export de la disposition active depuis le menu.
+- Structures validées et normalisées avant intégration dans le moteur; `groups` conservés.
+- Export et bouton d’ouverture du dossier branchés.
 
 ### Priorité 2 — Fiabiliser le drag et la prévisualisation
 
+**État au 27 octobre 2026 : code partiel, recette Cinnamon/X11 en attente.**
+
 - Exécuter la recette Cinnamon/X11 des interactions existantes.
-- Restaurer la taille d’origine au début du drag d’une fenêtre tuilée.
-- Ajouter edge tiling et vérifier la coexistence avec le snapping natif de Muffin.
+- Restauration de la taille d’origine au début du drag : codée (`lib/dragController.js`).
+- Tuilage aux bords : codé en option (`lib/edgeTiling.js`, `edge-tiling-mode`), avec priorité à l’aperçu natif de Muffin.
+- Terminer l’extraction de la boucle de grab dans `lib/dragController.js`.
 
 ### Priorité 3 — Auto-tiling et espaces de travail
 
@@ -105,7 +111,8 @@ Séparer le moteur de tuilage des quatre dispositions codées en dur pour permet
 
 #### Fichiers concernés
 
-- [extension.js](../extension.js)
+- [lib/layoutEngine.js](../lib/layoutEngine.js)
+- [lib/tilingExtension.js](../lib/tilingExtension.js)
 - [settings-schema.json](../settings-schema.json)
 - [stylesheet.css](../stylesheet.css)
 
@@ -145,7 +152,7 @@ Afficher une aide visuelle au bord supérieur et permettre de poser immédiateme
 
 #### Implémentation technique
 
-- Ajout d’une classe `SnapAssistant` dans [extension.js](../extension.js)
+- Ajout d’une classe `SnapAssistant` dans [lib/snapAssistant.js](../lib/snapAssistant.js)
 - Conteneur visuel `St.BoxLayout` dans `Main.uiGroup`
 - Construction dynamique des mini-tuiles selon la disposition active
 - Méthodes attendues :
@@ -171,7 +178,18 @@ Dans [settings-schema.json](../settings-schema.json) :
 - `enable-snap-assistant` (`checkbox`, défaut `true`)
 - `open-layouts-folder` (`button`, appelle `_openLayoutsFolder`)
 
+#### Tuilage aux bords (code présent, option désactivée par défaut)
+
+- `edge-tiling-mode` : `off`, `default`, `adaptive` ou `granular`.
+- Activation avec la touche de prévisualisation, dans les 16 px des bords (8 px en haut).
+- Le centre du bord haut maximise ; le Snap Assistant reste accessible juste sous cette bande.
+- `default` : quarts aux coins, moitiés sur les bords ; `adaptive` : colonne/ligne de la disposition ; `granular` : tuile sous le pointeur.
+- Les aperçus natifs Muffin annulent les cibles de l’extension pour éviter un double rendu.
+- Recette Cinnamon/X11 et priorité réelle face au snapping natif à valider.
+
 ### Phase 4 — Automatisation et espaces de travail
+
+**État au 27 octobre 2026 : sélection par moniteur/espace codée; auto-tiling et suggestions à faire.**
 
 - Conserver la disposition sélectionnée par moniteur et par espace de travail.
 - Proposer le meilleur emplacement libre à l’ouverture d’une fenêtre.
@@ -205,15 +223,20 @@ Dans [settings-schema.json](../settings-schema.json) :
 
 ### TilingExtension
 
-- Instancier `SnapAssistant` dans le constructeur
-- Le détruire dans `disable()`
+- Créer `SnapAssistant` et `PreviewOverlay` dans `enable()`
+- Les détruire dans `disable()`
 - Vérifier la proximité du bord supérieur dans `_onDragTick()`
 - Afficher l’assistant et enregistrer la tuile cible lors du survol
 - Ancrer la fenêtre dans la tuile sélectionnée au relâchement
+- Déléguer la géométrie des bords à `lib/edgeTiling.js` et la restauration de taille à `lib/dragController.js`
+- Suivre les signaux Muffin `show-tile-preview`/`hide-tile-preview` pour céder la priorité à l’aperçu natif
 
 ## Checklist de livraison par phase
 
 ### Phase 1 — Dispositions personnalisées
+
+> Cases à cocher après la recette Cinnamon/X11. Le code correspondant est présent, mais
+> le dossier n’est pas encore utilisé pour le redimensionnement solidaire des `groups`.
 
 - [ ] dossier `~/.config/cinnaflow/layouts/` créé automatiquement
 - [ ] fichier d’exemple généré
@@ -239,6 +262,16 @@ Dans [settings-schema.json](../settings-schema.json) :
 - [ ] fenêtre ancrée dans la tuile choisie
 - [ ] option `enable-snap-assistant` fonctionnelle
 
+### Phase 3 bis — Tuilage aux bords (code présent, option)
+
+- [ ] `edge-tiling-mode` = `off` : aucun changement de comportement
+- [ ] `default` : coins en quarts, bords en moitiés, bord bas en moitié
+- [ ] `adaptive` : colonne/ligne de la disposition
+- [ ] `granular` : tuile sous le pointeur
+- [ ] centre du bord haut : maximise
+- [ ] Snap Assistant accessible sous les 8 px du bord haut
+- [ ] aperçu natif Muffin prioritaire, sans double rendu
+
 ## Vérification à chaque étape
 
 - Tester avec une, deux et trois sorties, y compris diverses résolutions et échelles.
@@ -246,25 +279,23 @@ Dans [settings-schema.json](../settings-schema.json) :
 - Vérifier les fenêtres normales, maximisées, plein écran, dialogues et fenêtres toujours au-dessus.
 - Vérifier que la désactivation de l’extension supprime les raccourcis, acteurs et signaux créés.
 
-## Tests automatisés (Simulation JavaScriptCore)
+## Tests automatisés (simulation portable)
 
-- **Validation du parseur JSON** :
-  - chargement d’un fichier valide, vérification de la normalisation des coordonnées,
-  - robustesse face à des fichiers mal formés ou hors limites,
-  - rejet propre sans crash.
-- **Validation du Snap Assistant** :
-  - mouvement du pointeur vers le bord haut (`y < 35`) → activation,
-  - survol d’une mini-tuile → sélection de la tuile cible,
-  - relâchement → ancrage correct dans la tuile choisie.
-- **Validation syntaxique globale** :
-  - exécution complète du script de simulation sans erreur.
+Une simulation partielle existe dans [`scripts/simulation.js`](../scripts/simulation.js), exécutée par `scripts/check.sh` avec Node ou JavaScriptCore. Elle vérifie :
+
+- **Parseur et export JSON** : collection Tiling Shell, objet seul, `groups`, `w`/`h`, normalisation des coordonnées, JSON invalide ignoré, export en collection et réimport ;
+- **État persistant** : sélection par moniteur/espace de travail, relecture après redémarrage, indices invalides normalisés, fichier corrompu ignoré ;
+- **Géométrie de drag et de bords** : restauration de la taille en conservant le point saisi, trois modes d’edge tiling, maximise au bord haut ;
+- **Exécution globale** : chargement de `extension.js` et des modules `lib/` avec des imports simulés et un système de fichiers en mémoire.
+
+Elle ne simule pas le Snap Assistant, les acteurs St, les signaux Muffin, le menu du panneau, la boucle de grab ni le multi-écran. Ces interactions restent couvertes par [la recette](recette-cinnamon.md).
 
 ## Priorisation finale recommandée
 
-1. Dispositions personnalisées + JSON
-2. Prévisualisation au déplacement
-3. Snap Assistant et tuilage aux bords
-4. Automatisation et espaces de travail
-5. Gestion avancée des fenêtres
+1. Valider sous Cinnamon/X11 les dispositions personnalisées, le JSON et l’état persistant.
+2. Valider la prévisualisation, la restauration de taille et le tuilage aux bords.
+3. Terminer l’extraction de la boucle de grab.
+4. Automatisation et espaces de travail.
+5. Gestion avancée des fenêtres.
 
 Cette séquence permet d’obtenir de la valeur fonctionnelle rapidement, tout en posant les fondations nécessaires pour la suite.

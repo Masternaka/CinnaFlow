@@ -20,7 +20,14 @@ def main():
     uuid = metadata["uuid"]
     if not isinstance(uuid, str) or uuid in ("", ".", "..") or "/" in uuid or "\\" in uuid:
         parser.error("UUID invalide pour le dossier de l'archive.")
-    files = ("extension.js", "metadata.json", "settings-schema.json", "stylesheet.css", "LICENSE")
+    files = ["extension.js", "metadata.json", "settings-schema.json", "stylesheet.css", "LICENSE"]
+    lib_dir = root / "lib"
+    if not lib_dir.is_dir():
+        parser.error("Le dossier lib/ des modules GJS est absent.")
+    lib_files = sorted(path.relative_to(root).as_posix() for path in lib_dir.rglob("*.js"))
+    if not lib_files:
+        parser.error("Aucun module JavaScript dans lib/.")
+    files.extend(lib_files)
     # Lire tous les fichiers avant de créer l'archive pour éviter un ZIP incomplet.
     contents = {name: (root / name).read_bytes() for name in files}
     args.output_dir.mkdir(parents=True, exist_ok=True)

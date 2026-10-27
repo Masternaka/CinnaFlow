@@ -2,8 +2,8 @@
     "layout": {
         "type": "combobox",
         "default": "two-columns",
-        "description": "Disposition active",
-        "tooltip": "La disposition appliquee par les raccourcis et le menu de panneau.",
+        "description": "Disposition par defaut",
+        "tooltip": "Utilisee pour les moniteurs et espaces de travail sans selection. Le menu, le cycle clavier et le Snap Assistant memorisent ensuite la disposition par moniteur et par espace de travail.",
         "options": {
             "Deux colonnes": "two-columns",
             "Colonne principale et pile": "main-stack",
@@ -90,7 +90,25 @@
         "type": "checkbox",
         "default": true,
         "description": "Appliquer la disposition de la carte choisie dans le Snap Assistant",
-        "tooltip": "Lorsqu'une fenetre est deposee sur une carte d'une autre disposition, celle-ci devient la disposition active du bureau."
+        "tooltip": "Lorsqu'une fenetre est deposee sur une carte d'une autre disposition, celle-ci devient la disposition memorisee pour ce moniteur et cet espace de travail."
+    },
+    "restore-original-size": {
+        "type": "checkbox",
+        "default": true,
+        "description": "Restaurer la taille d'origine au debut du deplacement",
+        "tooltip": "Lorsqu'une fenetre tuilee est deplacee de plus de 90 px, retrouve la taille qu'elle avait avant le tuilage."
+    },
+    "edge-tiling-mode": {
+        "type": "combobox",
+        "default": "off",
+        "description": "Tuilage aux bords",
+        "tooltip": "Necessite la previsualisation. S'active avec la touche de previsualisation, dans les 16 px des bords (8 px en haut). Le bord haut maximise ; les modes Colonnes et Tuile utilisent la disposition courante.",
+        "options": {
+            "Desactive": "off",
+            "Quarts et moities": "default",
+            "Colonnes de la disposition": "adaptive",
+            "Tuile survolee": "granular"
+        }
     },
     "debug": {
         "type": "checkbox",

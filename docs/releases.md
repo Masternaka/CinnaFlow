@@ -32,7 +32,7 @@ jeton GitHub Actions avec la permission `contents: write`.
 
 La release contient des notes générées automatiquement et `CinnaFlow-vN.zip`.
 L'archive contient le dossier `cinnamon-tiling-shell@local` avec `extension.js`,
-`metadata.json`, `settings-schema.json`, `stylesheet.css` et `LICENSE`.
+`metadata.json`, `settings-schema.json`, `stylesheet.css`, `LICENSE` et les modules `lib/*.js` (10 actuellement).
 Pour une installation depuis le ZIP, extraire ce dossier dans
 `~/.local/share/cinnamon/extensions/`, en préservant toute installation existante.
 

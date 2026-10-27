@@ -1,30 +1,36 @@
-# Résumé de session — 21 octobre 2026
+# Résumé de session — 27 octobre 2026
 
 ## Demande
 
-Appliquer à CinnaFlow l’organisation documentaire et les conventions de dépôt actuelles de Menu de la semaine, et créer `AGENTS.md`.
+Faire avancer le projet en priorisant l’état persistant et l’interopérabilité JSON (étape 4), puis le découpage modulaire (étape 3) et le début de fiabilisation du drag (étape 5). La recette graphique Cinnamon/X11 reste impossible sur le poste macOS utilisé.
 
 ## Modifications
 
-- Création d’`AGENTS.md` : documentation Markdown locale, architecture, règles Cinnamon/GJS, préservation des données, vérifications et confirmation avant commit/push ou écriture GitHub.
-- Documentation regroupée dans `docs/` : déplacement de `ROADMAP.md`, `PLAN-IMPLEMENTATION.md` et `docs/CHECKLIST.md` vers les noms en minuscules de l’index.
-- README recentré sur le démarrage; installation détaillée et releases déplacées dans leurs guides.
-- Ajout d’un index, de l’architecture actuelle, de l’état du projet et des limites de vérification.
-- Lecture de l’accueil Notion et de ses six pages documentaires; conservation des liens de provenance. Ces pages restent historiques, sans modification distante.
-- Alignement des consignes Copilot sur `AGENTS.md`.
-
-Les fichiers de l’extension, la licence, les scripts, les workflows et la version restent inchangés. L’architecture modulaire `lib/` est future.
+- `LayoutEngine` : format proche de Tiling Shell avec `groups` conservés, champs `w`/`h` acceptés pour les anciens fichiers, coordonnées normalisées et arrondies, identifiants en double ignorés sans écrasement.
+- Export branché sur le menu : collection d’une disposition écrite dans `~/.config/cinnaflow/layouts/exports/`, sans écraser un fichier existant.
+- `LayoutState` : sélection par moniteur et espace de travail dans `~/.config/cinnaflow/state.json`, relecture à l’activation, fichier corrompu ignoré. La préférence `layout` devient la disposition par défaut.
+- Sélection utilisée par le menu, le cycle clavier, les raccourcis de tuilage, le drag classique et le Snap Assistant. Le dépôt sur une carte mémorise la disposition du moniteur/espace cible.
+- Menu complété par l’export et l’ouverture du dossier des dispositions.
+- Découpage modulaire : `Log`, `LayoutEngine`, `LayoutState`, `WindowTracker`, `IndicatorManager`, `PreviewOverlay`, `SnapAssistant` et `TilingExtension` sont dans `lib/`, exportés avec `var` et chargés via `Extension.getCurrentExtension().imports`. `extension.js` ne garde que `init`/`enable`/`disable`.
+- `scripts/simulation.js` : simulation portable du moteur, de l’état, du chemin d’export et du chargement des modules, avec imports simulés et système de fichiers en mémoire. Intégrée à `scripts/check.sh` via Node ou JavaScriptCore.
+- `lib/edgeTiling.js` : géométrie pure des bords/coins (modes default, adaptive, granular) avec maximise au bord haut. Option `edge-tiling-mode` désactivée par défaut, activation avec la touche de prévisualisation.
+- `lib/dragController.js` : restauration de la taille d’origine en conservant le point saisi; seuil 90 px, option `restore-original-size` activée par défaut, fenêtres d’origine maximisées exclues.
+- `TilingExtension` : boucle de grab étendue à la restauration et aux bords, suivi des signaux Muffin `show-tile-preview`/`hide-tile-preview` pour éviter un double aperçu, application des rectangles de bord ou maximise au relâchement.
+- `scripts/package-release.py` inclut désormais `lib/*.js` dans le ZIP.
+- Documentation actualisée et auditée : `AGENTS.md`, `README.md`, architecture, état, plan, roadmap, utilisation, releases, vérifications et recette; statuts, réglages, modules et procédures alignés sur le code.
+- Aucun commit ni push : les étapes 3, 4 et 5 restent dans l'arbre de travail et devront être séparées en commits avant publication.
+- Audit documentaire : aucun changement de code pendant la mise à jour de la documentation.
 
 ## Vérifications
 
-- `bash scripts/check.sh` : syntaxe JavaScriptCore, JSON et points d’entrée Cinnamon réussis, sans `SKIP`.
+- `bash scripts/check.sh` : syntaxe JavaScriptCore, JSON, simulation (10 dispositions, import/export, état, chargement des 10 modules, géométrie des bords et de restauration) et points d’entrée Cinnamon réussis, sans `SKIP`.
+- `osascript -l JavaScript scripts/simulation.js` : réussi.
 - `git diff --check` : réussi.
-- Liens Markdown locaux : 70 chemins vérifiés, tous existants.
-- Roadmap, plan et recette : comparaison intégrale avec les originaux Git réussie après normalisation des seuls chemins déplacés; titres, cases et contenu conservés.
-- ZIP `v1` généré dans un dossier temporaire : les cinq fichiers attendus sont présents et leurs octets sont identiques aux originaux Git. Aucun artefact ajouté au dépôt.
+- 74 liens Markdown locaux vérifiés : tous existants.
+- Paquet local `v1` généré dans un dossier temporaire : 5 fichiers racine et 10 modules `lib/` présents; aucun artefact ajouté au dépôt.
 
-La recette graphique Cinnamon/X11, l’installation du paquet et les workflows GitHub distants ne sont pas exécutés sur ce poste macOS.
+La recette Cinnamon/X11, l’import réel dans Tiling Shell, le menu, le grab réel, le multi-écran et le redémarrage de Cinnamon ne sont pas exécutés sur ce poste macOS. Le chargement réel des modules par GJS/Cinnamon reste à valider. Le tuilage aux bords est désactivé par défaut; sa priorité face à Muffin, les animations et la reprise de grab ne sont pas validées. Les `groups` sont préservés mais ne pilotent pas encore le redimensionnement solidaire.
 
 ## Reprise
 
-Lire [AGENTS.md](../AGENTS.md), [l’état du projet](etat-projet.md) et le [plan](plan-implementation.md). La priorité de validation reste la recette Cinnamon/X11; ne pas confondre les fonctions codées avec des interactions validées. Aucun commit ni push n’est effectué dans cette tâche.
+Lire [l’état du projet](etat-projet.md) et [le plan](plan-implementation.md). Priorité : recette Cinnamon/X11 des étapes 0 à 5, notamment le chargement des modules, la réactivation, la restauration de taille et les bords. Ensuite, terminer l’étape 5 (grab réel, priorité Muffin, extraction complète de la boucle de drag) avant l’auto-tiling. La session du 21 octobre (réorganisation documentaire) reste dans l’historique Git.

@@ -22,18 +22,20 @@ Les anciennes pages Notion restent des sources historiques. Préserver les notes
 
 | Chemin | Responsabilité |
 | --- | --- |
-| `extension.js` | Code GJS : moteur de dispositions, fenêtres, indicateur, prévisualisation, Snap Assistant et cycle de vie. |
+| `extension.js` | Points d’entrée `init` / `enable` / `disable` et import de l’orchestrateur. |
+| `lib/` | Modules GJS : journal, moteur de dispositions, état, suivi des fenêtres, indicateur, aperçu, Snap Assistant, bords, drag et orchestration. |
 | `metadata.json` | UUID, nom, version entière et versions Cinnamon déclarées. |
 | `settings-schema.json` | Préférences, raccourcis et callbacks exposés à Cinnamon. |
 | `stylesheet.css` | Styles de l’extension. |
 | `scripts/check.sh` | Contrôles statiques locaux et CI. |
+| `scripts/simulation.js` | Simulation portable du moteur, de l’état, du JSON, des modules et de la géométrie de drag/bords, sans API Cinnamon. |
 | `scripts/package-release.py` | Validation du tag `vN` et génération du ZIP installable. |
 | `.github/workflows/` | CI sur `main`/PR et préparation des releases en brouillon. |
 | `docs/` | Documentation et recette manuelle. |
 
-Conserver `extension.js`, `metadata.json`, `settings-schema.json`, `stylesheet.css` et `LICENSE` à la racine : Cinnamon et le script de packaging utilisent ces chemins. Garder les outils dans `scripts/`, les workflows dans `.github/workflows/`, les artefacts générés dans `dist/` (ignoré par Git).
+Conserver `extension.js`, `metadata.json`, `settings-schema.json`, `stylesheet.css` et `LICENSE` à la racine : Cinnamon et le script de packaging utilisent ces chemins. Placer les modules GJS dans `lib/`, les outils dans `scripts/`, les workflows dans `.github/workflows/`, les artefacts générés dans `dist/` (ignoré par Git).
 
-L’extension est actuellement monolithique. `lib/` est une architecture future décrite dans le plan, pas une structure déjà implémentée. Un découpage ultérieur doit adapter les imports GJS, les vérifications et le packaging, puis être validé sous Cinnamon. Ne pas mélanger une réorganisation documentaire avec un changement de comportement.
+L’extension est désormais modulaire : `extension.js` charge `lib/tilingExtension.js` via `Extension.getCurrentExtension().imports`, et les modules locaux se chargent par le même importeur. Exporter les symboles avec `var` (pas `class`/`const`/`let` seuls) et ne pas utiliser `require`/`module.exports`. Toute évolution de `lib/` doit adapter les contrôles et le paquet, puis être validée sous Cinnamon.
 
 ## Démarrer et vérifier
 
@@ -46,9 +48,9 @@ bash scripts/check.sh
 git diff --check
 ```
 
-Le script utilise Node.js, ou JavaScriptCore via `osascript` sur macOS, pour compiler la syntaxe sans exécuter les API Cinnamon. Il vérifie aussi les JSON avec `jq` ou Python 3 et la présence des fonctions module `init`, `enable`, `disable`. Signaler les contrôles marqués `SKIP`; un code de sortie nul ne prouve pas qu’ils ont tous été exécutés.
+Le script utilise Node.js, ou JavaScriptCore via `osascript` sur macOS, pour compiler la syntaxe sans exécuter les API Cinnamon. Il couvre `extension.js` et `lib/*.js`, vérifie les JSON avec `jq` ou Python 3, contrôle la présence des fonctions module `init`, `enable`, `disable`, puis exécute `scripts/simulation.js` avec un système de fichiers en mémoire. Signaler les contrôles marqués `SKIP`; un code de sortie nul ne prouve pas qu’ils ont tous été exécutés.
 
-Pour une modification documentaire, vérifier les liens, les chemins, les commandes et les différences. Pour une modification de logique, effectuer les contrôles statiques et une vérification pertinente du comportement. Les simulations fonctionnelles évoquées dans la roadmap restent à construire; ne pas annoncer une suite de tests existante.
+Pour une modification documentaire, vérifier les liens, les chemins, les commandes et les différences. Pour une modification de logique, effectuer les contrôles statiques et une vérification pertinente du comportement. La simulation couvre le moteur de dispositions, l’import/export JSON, l’état persistant, le chargement des modules et la géométrie de drag/bords; elle ne remplace pas la recette des interactions Cinnamon, du Snap Assistant, de Muffin ou du multi-écran.
 
 Avant fusion ou livraison d’un changement de l’extension, exécuter [la recette](docs/recette-cinnamon.md) sur Cinnamon/X11 et consigner l’environnement et les résultats. Si cet environnement est indisponible, indiquer explicitement la validation restante. Les contrôles sur macOS et la CI ne valident pas les API GJS, les interactions graphiques ou le multi-écran.
 
@@ -57,10 +59,10 @@ Avant fusion ou livraison d’un changement de l’extension, exécuter [la rece
 - Garder `init`, `enable`, `disable` au niveau module et les callbacks de préférences accessibles depuis l’objet retourné par `enable()`.
 - Créer les acteurs visuels lors de l’activation; nettoyer acteurs, signaux, timers, raccourcis et préférences lors de la désactivation. Vérifier activation → désactivation → réactivation, y compris après fermeture d’une fenêtre pendant un drag.
 - Préserver les quatre dispositions intégrées, les raccourcis configurables, les marges, les zones de travail par moniteur et la restauration de la géométrie et de l’état maximisé.
-- Conserver les options de prévisualisation, de modificateur et de Snap Assistant, ainsi que `sync-layout-on-snap`. Vérifier la coexistence avec le snapping natif de Muffin.
+- Conserver les options de prévisualisation, de modificateur, de Snap Assistant, de restauration de taille et de tuilage aux bords, ainsi que `sync-layout-on-snap`. Le tuilage aux bords est désactivé par défaut. Vérifier la coexistence avec le snapping natif de Muffin.
 - Détecter les API privées avant usage et prévoir une dégradation explicite. Ne pas modifier globalement les styles ou les éléments des autres extensions/panneaux.
 - Préserver les dispositions utilisateur dans `~/.config/cinnaflow/layouts/` et les préférences Cinnamon. Employer des données temporaires pour les essais; ne pas supprimer ou remplacer la configuration personnelle.
-- Le chargement JSON existe, mais la persistance par moniteur/espace de travail et l’interopérabilité complète avec Tiling Shell restent futures. Ne pas confondre code présent, interface exposée et fonctionnalité validée.
+- Le chargement JSON, l’export au format Tiling Shell, la conservation de `groups`, la sélection par moniteur/espace de travail dans `~/.config/cinnaflow/state.json`, le découpage en modules, la restauration de taille et le tuilage aux bords sont codés, mais la recette Cinnamon/X11 reste à faire. Le tuilage aux bords est désactivé par défaut. Les `groups` ne pilotent pas encore le redimensionnement solidaire prévu aux étapes 7 et 8. Ne pas confondre code présent, interface exposée et fonctionnalité validée.
 - Conserver des libellés et messages utilisateur en français, ainsi que la préférence `debug` et les traces `[CinnaFlow]`.
 - Ne pas placer de secrets, de données personnelles ou d’artefacts générés dans Git.
 

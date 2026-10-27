@@ -12,13 +12,13 @@ Depuis le 21 octobre 2026, le dépôt est la référence documentaire. Les guide
 | [Architecture](architecture.md) | Organisation actuelle du code et du dépôt. |
 | [État du projet](etat-projet.md) | Fonctions codées, validations restantes et prochaines étapes. |
 | [Roadmap](roadmap.md) | Intentions produit et backlog détaillé. |
-| [Plan d’implémentation](plan-implementation.md) | Étapes techniques, historique et architecture future. |
-| [Vérifications](verifications.md) | Commandes, couverture et limites des contrôles. |
+| [Plan d’implémentation](plan-implementation.md) | Étapes techniques, historique et architecture cible. |
+| [Vérifications](verifications.md) | Commandes, simulation, couverture et limites des contrôles. |
 | [Checklist](recette-cinnamon.md) | Recette manuelle Cinnamon/X11 et journal de résultats. |
 | [Releases](releases.md) | Packaging et workflow GitHub. |
 | [Résumé de session](resume-session.md) | Derniers changements et reprise du travail. |
 
-Le plan conserve les statuts techniques détaillés; la roadmap conserve les idées et leur priorité. Ses cases non cochées et ses propositions de simulations ne prouvent ni absence de code ni existence de tests. Consulter l’état du projet et le code avant de décider d’un travail. L’arborescence `lib/` du plan est une cible future.
+Le plan conserve les statuts techniques détaillés; la roadmap conserve les idées et leur priorité. Ses cases non cochées ne prouvent ni absence de code ni validation. Une simulation partielle du JSON, de l’état, du chargement des modules et de la géométrie de drag/bords existe; voir [Vérifications](verifications.md). Consulter l’état du projet et le code avant de décider d’un travail. Le découpage `lib/` est réalisé; la scission interne du menu et de la boucle de grab reste à faire.
 
 ## Structure du dépôt
 
@@ -28,18 +28,19 @@ CinnaFlow/
 ├── README.md
 ├── LICENSE
 ├── extension.js
+├── lib/                  # modules GJS de l’extension
 ├── metadata.json
 ├── settings-schema.json
 ├── stylesheet.css
 ├── docs/                 # guides, plans et suivi
-├── scripts/              # vérification et packaging
+├── scripts/              # vérification, simulation et packaging
 ├── .github/
 │   ├── copilot-instructions.md
 │   └── workflows/        # CI et release
 └── dist/                 # paquets générés, ignorés par Git
 ```
 
-Les fichiers chargés par Cinnamon et la licence restent à la racine. Aucun dossier source vide n’est ajouté pour anticiper la modularisation. La configuration personnelle reste hors du dépôt.
+Les fichiers chargés par Cinnamon et la licence restent à la racine; les modules GJS sont dans `lib/`. La configuration personnelle reste hors du dépôt.
 
 ## Entretien
 
