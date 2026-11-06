@@ -57,4 +57,4 @@ La simulation couvre une partie des scénarios JSON, état, chargement des modul
 
 ## Réorganisation du 21 octobre 2026
 
-La réorganisation documentaire et ses vérifications sont conservées dans l’historique Git (commit `eaa2cb9`). Le [résumé de session](resume-session.md) actuel porte sur la session du 27 octobre. La recette Cinnamon/X11, l’installation du ZIP et les workflows distants restent à vérifier dans leurs environnements respectifs.
+La réorganisation documentaire et ses vérifications sont conservées dans l’historique Git (commit `eaa2cb9`). Le [résumé de session](resume-session.md) conserve le bilan du 27 octobre et le point de reprise du 6 novembre. La recette Cinnamon/X11, l’installation du ZIP et les workflows distants restent à vérifier dans leurs environnements respectifs.
